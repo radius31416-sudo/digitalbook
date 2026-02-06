@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: Mr. Moti - Interactive Class</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Added weights 500 and 600 for Lato to support semi-bold text -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #fdfbf7;
+        }
+        .bengali-font {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+        
+        /* Interactive Segment Styles */
+        .phrase-segment {
+            cursor: pointer;
+            padding: 3px 6px; /* Slightly larger padding */
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px solid transparent;
+            font-weight: 700; /* Made text bolder as requested */
+            color: #374151; /* Dark gray for better contrast */
+            margin-bottom: 4px;
+        }
+        
+        .phrase-segment:hover {
+            background-color: #fef08a;
+            border-bottom: 2px solid #eab308;
+            color: #000;
+        }
+
+        .phrase-segment.active {
+            background-color: #bfdbfe;
+            border-bottom: 2px solid #2563eb;
+            color: #1e3a8a;
+        }
+
+        /* Tooltip Styling */
+        .custom-tooltip {
+            visibility: hidden;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            padding: 6px 12px; /* Reduced padding */
+            border-radius: 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 135%; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: 350px; /* Increased max-width */
+            font-family: 'Noto Serif Bengali', serif;
+            font-size: 1.3rem; /* Increased font size */
+            font-weight: 600; /* Bold font */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none; 
+        }
+
+        .custom-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .phrase-segment.active .custom-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Sentence Translation Block */
+        .sentence-translation {
+            display: none;
+            margin-top: 12px;
+            margin-bottom: 24px;
+            padding: 8px 12px; /* Reduced padding */
+            background-color: #ecfccb;
+            border-left: 8px solid #84cc16;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Noto Serif Bengali', serif;
+            font-size: 1.5rem; /* Increased font size */
+            font-weight: 700; /* Bold font */
+            color: #1a2e05;
+            animation: slideDown 0.3s ease-out;
+            margin-left: 40px; 
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Buttons (Translate and Play) */
+        .action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            vertical-align: middle;
+            border: none;
+            outline: none;
+        }
+
+        .translate-btn {
+            background-color: #e2e8f0;
+            color: #475569;
+            margin-left: 8px;
+        }
+        
+        .translate-btn:hover {
+            background-color: #2563eb;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .translate-btn.active-btn {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        /* Play Sentence Button (At start of sentence) */
+        .play-sentence-btn {
+            background-color: #fee2e2;
+            color: #dc2626;
+            margin-right: 10px;
+            position: relative;
+            top: -2px; /* Slight alignment adjustment */
+        }
+
+        .play-sentence-btn:hover {
+            background-color: #dc2626;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Sentence Container */
+        .sentence-container {
+            margin-bottom: 28px;
+            line-height: 2.4; /* Increased line height for better readability */
+            display: block;
+        }
+
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-wide">RADIUS ACADEMY</h1>
+                <p class="text-lg opacity-90">Azizul Haque</p>
+            </div>
+            <div class="hidden md:block text-right">
+                <p class="text-lg font-semibold">Unit 1: Sense of Self</p>
+                <p class="text-lg font-semibold">Lesson 1: "Mr. Moti"</p>
+                <p class="text-xs italic opacity-90">by Rahad Abir</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls / Legend -->
+    <div class="bg-white border-b border-gray-200 py-4 shadow-sm">
+        <div class="container mx-auto px-6 flex flex-wrap gap-6 items-center justify-center text-sm font-medium text-gray-700">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 shadow-sm"><i class="fas fa-volume-up"></i></span>
+                <span>Click to Listen (Sentence)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-6 h-6 bg-yellow-200 rounded border border-yellow-400"></span>
+                <span>Click Phrase to Listen & See Meaning</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 shadow-sm"><i class="fas fa-language"></i></span>
+                <span>Show Full Translation</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 py-10 max-w-[95%]">
+        
+        <!-- Intro Section -->
+        <section id="intro-container" class="mb-12 bg-white p-10 rounded-2xl shadow-md border border-gray-100">
+            <h2 class="text-3xl text-indigo-800 font-bold mb-8 border-b-2 border-indigo-100 pb-3">Introduction</h2>
+            <div id="intro-content" class="text-2xl text-gray-800 text-justify">
+                <!-- Content injected via JS -->
+            </div>
+        </section>
+
+        <!-- Story Section -->
+        <section id="story-container" class="bg-white p-10 rounded-2xl shadow-lg border border-gray-100">
+            <h2 class="text-3xl text-indigo-800 font-bold mb-8 border-b-2 border-indigo-100 pb-3">The Story</h2>
+            <div id="story-content" class="text-2xl text-gray-900 text-justify">
+                <!-- Content injected via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12 text-center">
+        <p class="text-sm opacity-70">Interactive Learning Module created for Digital Classroom.</p>
+    </footer>
+
+    <script>
+        // Data Structure
+        const storyData = [
+            // Introduction Paragraph
+            {
+                section: "intro",
+                sentences: [
+                    {
+                        full_bn: "অর্থনীতি এবং শিক্ষা দুটি প্রধান কারণ যা একটি সমাজে মানুষকে পৃথক করে।",
+                        segments: [
+                            { en: "Economy and education", bn: "অর্থনীতি এবং শিক্ষা" },
+                            { en: "are two major factors", bn: "দুটি প্রধান কারণ" },
+                            { en: "that segregate people", bn: "যা মানুষকে পৃথক করে" },
+                            { en: "in a society.", bn: "একটি সমাজে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "'মিস্টার মতি' হলো বাংলাদেশি লেখক রাহাত আবিরের লেখা একটি গল্প।",
+                        segments: [
+                            { en: "‘Mr. Moti’ is a story", bn: "'মিস্টার মতি' একটি গল্প" },
+                            { en: "by a Bangladeshi writer", bn: "একজন বাংলাদেশি লেখকের" },
+                            { en: "Rahad Abir.", bn: "রাহাত আবির।" }
+                        ]
+                    },
+                    {
+                        full_bn: "গল্পটির দুটি অংশ পড়ো এবং বিভিন্ন সামাজিক শ্রেণীর মানুষের পরিচয় বোঝার চেষ্টা করো।",
+                        segments: [
+                            { en: "Read the two sections", bn: "দুটি অংশ পড়ো" },
+                            { en: "of the story", bn: "গল্পটির" },
+                            { en: "and try to understand", bn: "এবং বোঝার চেষ্টা করো" },
+                            { en: "the identity of people", bn: "মানুষের পরিচয়" },
+                            { en: "belonging to different social classes.", bn: "যারা বিভিন্ন সামাজিক শ্রেণীর অন্তর্ভুক্ত।" }
+                        ]
+                    },
+                    {
+                        full_bn: "এছাড়াও, ভাবো কিভাবে মানুষের জগৎ এবং পশুপাখি একে অপরের সাথে সম্পর্কিত।",
+                        segments: [
+                            { en: "Also, think about", bn: "এছাড়াও, ভাবো" },
+                            { en: "how the human world", bn: "কিভাবে মানুষের জগৎ" },
+                            { en: "and animals/birds", bn: "এবং পশুপাখি" },
+                            { en: "are inter-related.", bn: "একে অপরের সাথে সম্পর্কিত।" }
+                        ]
+                    }
+                ]
+            },
+            // Story Content
+            {
+                section: "story",
+                sentences: [
+                    {
+                        full_bn: "যুদ্ধ শুরু হওয়ার সময় আমিনের বয়স ছিল সতেরো।",
+                        segments: [
+                            { en: "Ameen is seventeen", bn: "আমিনের বয়স সতেরো" },
+                            { en: "when the war breaks out.", bn: "যখন যুদ্ধ শুরু হয়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "এক সোমবার, রাতের খাবারের পর, সে ঘোষণা দেয় যে সে যুদ্ধে যাবে।",
+                        segments: [
+                            { en: "One Monday,", bn: "এক সোমবার," },
+                            { en: "after supper,", bn: "রাতের খাবারের পর," },
+                            { en: "he announces", bn: "সে ঘোষণা দেয়" },
+                            { en: "he will go to war.", bn: "সে যুদ্ধে যাবে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সোনাভান অবাক হয়ে চিৎকার করে ওঠে, “তুমি আমাকে একা রেখে যেতে চাও?”",
+                        segments: [
+                            { en: "Sonabhan shrieks", bn: "সোনাভান চিৎকার করে ওঠে" },
+                            { en: "in surprise,", bn: "অবাক হয়ে," },
+                            { en: "“You want to leave me alone?”", bn: "“তুমি আমাকে একা রেখে যেতে চাও?”" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তাকে আশ্বস্ত করে, “বেশি সময় লাগবে না, মা। প্রশিক্ষণের পরেই আমি ফিরে আসব।”",
+                        segments: [
+                            { en: "“It won’t take long,” Ma,", bn: "“বেশি সময় লাগবে না, মা,”" },
+                            { en: "he assures her.", bn: "সে তাকে আশ্বস্ত করে।" },
+                            { en: "“I’ll be back soon", bn: "“আমি শীঘ্রই ফিরে আসব" },
+                            { en: "after the training.”", bn: "প্রশিক্ষণের পরে।”" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে রাতে সোনাভান ঘুমাতে পারে না।",
+                        segments: [
+                            { en: "That night", bn: "সে রাতে" },
+                            { en: "Sonabhan cannot sleep.", bn: "সোনাভান ঘুমাতে পারে না।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সূর্য ওঠার পর, সে হাঁসের খাঁচা খুলে দেয়।",
+                        segments: [
+                            { en: "After sun-up,", bn: "সূর্য ওঠার পর," },
+                            { en: "she opens the duck coop.", bn: "সে হাঁসের খাঁচা খুলে দেয়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "হাঁসের পাল বেরিয়ে আসে, আড়মোড়া ভাঙে এবং সকালের খাবারের জন্য তার চারপাশে প্যাকপ্যাক শুরু করে।",
+                        segments: [
+                            { en: "The flock streams out,", bn: "হাঁসের পাল বেরিয়ে আসে," },
+                            { en: "stretches", bn: "আড়মোড়া ভাঙে" },
+                            { en: "and quacks around her", bn: "এবং তার চারপাশে প্যাকপ্যাক করে" },
+                            { en: "for their morning meal.", bn: "তাদের সকালের খাবারের জন্য।" }
+                        ]
+                    },
+                    {
+                        full_bn: "আজ তার স্বাভাবিকের চেয়ে বেশি সময় লাগে।",
+                        segments: [
+                            { en: "She takes longer", bn: "তার বেশি সময় লাগে" },
+                            { en: "than usual.", bn: "স্বাভাবিকের চেয়ে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে একটি মাটির পাত্রে ধানের তুষের সাথে পানি মেশায় এবং নামিয়ে রাখে।",
+                        segments: [
+                            { en: "She mixes water", bn: "সে পানি মেশায়" },
+                            { en: "with rice husks", bn: "ধানের তুষের সাথে" },
+                            { en: "in an earthen bowl", bn: "একটি মাটির পাত্রে" },
+                            { en: "and puts it down.", bn: "এবং নিচে রাখে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তারা পাঁচ মিনিটে সেটা গিলে ফেলে এবং পুকুরের দিকে রওনা দেয়।",
+                        segments: [
+                            { en: "They gobble it up", bn: "তারা সেটা গিলে ফেলে" },
+                            { en: "in five minutes", bn: "পাঁচ মিনিটে" },
+                            { en: "and head for the pond.", bn: "এবং পুকুরের দিকে রওনা দেয়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "ততক্ষণে আমিন মুরগিগুলো ছেড়ে দিয়েছে।",
+                        segments: [
+                            { en: "Ameen has let out", bn: "আমিন ছেড়ে দিয়েছে" },
+                            { en: "the chickens", bn: "মুরগিগুলো" },
+                            { en: "by then.", bn: "ততক্ষণে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার ১২ সপ্তাহের মোরগ ছানা, মতিকে কোলে তুলে বারান্দায় বসে।",
+                        segments: [
+                            { en: "He lifts his", bn: "সে তুলে নেয় তার" },
+                            { en: "12-week-old cockerel, Moti,", bn: "১২ সপ্তাহের মোরগ ছানা, মতিকে," },
+                            { en: "and sits on the veranda.", bn: "এবং বারান্দায় বসে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সকালের নাস্তার সময় সে কোনো কথাবার্তা শুরু করে না।",
+                        segments: [
+                            { en: "During his breakfast", bn: "তার সকালের নাস্তার সময়" },
+                            { en: "he doesn’t strike up", bn: "সে শুরু করে না" },
+                            { en: "any conversation.", bn: "কোনো কথাবার্তা।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সোনাভানের ফোলা চোখ দেখে, সে বোঝে গত রাতের বিষয়টি না তোলাই ভালো।",
+                        segments: [
+                            { en: "Having noticed", bn: "লক্ষ্য করে" },
+                            { en: "Sonabhan’s puffy eyes,", bn: "সোনাভানের ফোলা চোখ," },
+                            { en: "he knows not to mention", bn: "সে জানে উল্লেখ না করতে" },
+                            { en: "last night’s subject.", bn: "গত রাতের বিষয়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার দৃষ্টি একপাশে, নিঃশব্দে ভাত খেতে থাকা মোরগ ছানাটির দিকে নামায়।",
+                        segments: [
+                            { en: "He casts his glance", bn: "সে তার দৃষ্টি ফেলে" },
+                            { en: "to the side,", bn: "একপাশে," },
+                            { en: "down at the cockerel", bn: "নিচে মোরগ ছানাটির দিকে" },
+                            { en: "eating rice in silence.", bn: "যে নিঃশব্দে ভাত খাচ্ছে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "আজ হাট-বার।",
+                        segments: [
+                            { en: "Today is haat bar,", bn: "আজ হাট-বার," },
+                            { en: "market day.", bn: "বাজারের দিন।" }
+                        ]
+                    },
+                    {
+                        full_bn: "আমিন বাজারে বিক্রির জন্য যা যা নিয়ে যাবে, সোনাভান তা গুছিয়ে রেখেছে।",
+                        segments: [
+                            { en: "Sonabhan has arranged", bn: "সোনাভান গুছিয়ে রেখেছে" },
+                            { en: "the things", bn: "জিনিসপত্রগুলো" },
+                            { en: "Ameen will take to the bazaar", bn: "যা আমিন বাজারে নিয়ে যাবে" },
+                            { en: "to sell.", bn: "বিক্রি করতে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "দুই ডজন ডিম, এক ছড়া সুপারি, একটি লাউ।",
+                        segments: [
+                            { en: "Two dozen eggs,", bn: "দুই ডজন ডিম," },
+                            { en: "a sheaf of areca nuts,", bn: "এক ছড়া সুপারি," },
+                            { en: "a bottle gourd.", bn: "একটি লাউ।" }
+                        ]
+                    },
+                    {
+                        full_bn: "বাজারটি প্রায় এক মাইল দূরে।",
+                        segments: [
+                            { en: "The bazaar is", bn: "বাজারটি" },
+                            { en: "about a mile away.", bn: "প্রায় এক মাইল দূরে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "আমিন লুঙ্গির ওপর তার ছোট হাতাওয়ালা ফুলের নকশা করা শার্টটি পরে।",
+                        segments: [
+                            { en: "Ameen wears his", bn: "আমিন পরে আছে তার" },
+                            { en: "short-sleeved floral shirt", bn: "ছোট হাতাওয়ালা ফুলের শার্ট" },
+                            { en: "over his lungi.", bn: "তার লুঙ্গির ওপর।" }
+                        ]
+                    },
+                    {
+                        full_bn: "ঘোলা আয়নায় নিজের চুল আঁচড়ানোর সময় সে শিস বাজায়।",
+                        segments: [
+                            { en: "He whistles", bn: "সে শিস বাজায়" },
+                            { en: "as he looks into", bn: "যখন সে তাকায়" },
+                            { en: "the cloudy mirror", bn: "ঘোলা আয়নায়" },
+                            { en: "to comb his hair.", bn: "চুল আঁচড়াতে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "রওনা হওয়ার আগে বেতের ঝুড়িটি মাথায় তুলে সে হাঁক দেয়: “আমি গেলাম, মা।”",
+                        segments: [
+                            { en: "Placing the rattan basket", bn: "বেতের ঝুড়িটি রেখে" },
+                            { en: "on his head", bn: "তার মাথায়" },
+                            { en: "before setting off,", bn: "রওনা হওয়ার আগে," },
+                            { en: "he hollers:", bn: "সে হাঁক দেয়:" },
+                            { en: "“I’m off, Ma.”", bn: "“আমি গেলাম, মা।”" }
+                        ]
+                    },
+                    {
+                        full_bn: "সোনাভান তাকে ছোট নদীর পাড় ধরে যেতে দেখে।",
+                        segments: [
+                            { en: "Sonabhan watches him go", bn: "সোনাভান তাকে যেতে দেখে" },
+                            { en: "along the bank", bn: "তীর ধরে" },
+                            { en: "of the little river.", bn: "ছোট নদীটির।" }
+                        ]
+                    },
+                    {
+                        full_bn: "প্রথমবারের মতো তার মনে হয় যে আমিন বড় হয়েছে।",
+                        segments: [
+                            { en: "For the first time", bn: "প্রথমবারের মতো" },
+                            { en: "it occurs to her", bn: "তার মনে হয়" },
+                            { en: "that Ameen has grown up.", bn: "যে আমিন বড় হয়েছে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার মৃত বাবার উচ্চতা পেয়েছে, তার লম্বা ঘাড় এবং সোজা কাঁধ পেয়েছে।",
+                        segments: [
+                            { en: "He has reached the height", bn: "সে উচ্চতা পেয়েছে" },
+                            { en: "of his dead father,", bn: "তার মৃত বাবার," },
+                            { en: "has his long neck", bn: "পেয়েছে তার লম্বা ঘাড়" },
+                            { en: "and straight shoulders.", bn: "এবং সোজা কাঁধ।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সেই মুহূর্তে, সোনাভান বুঝতে পারে এটি যুদ্ধ নয়, বরং লড়াই যা আমিনকে মুগ্ধ করে।",
+                        segments: [
+                            { en: "In that moment,", bn: "সেই মুহূর্তে," },
+                            { en: "Sonabhan realizes", bn: "সোনাভান বুঝতে পারে" },
+                            { en: "it’s not the war,", bn: "এটি যুদ্ধ নয়," },
+                            { en: "it’s the fighting", bn: "বরং লড়াই" },
+                            { en: "that Ameen is fascinated with.", bn: "যা আমিনকে মুগ্ধ করে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তার মৃত বাবার মতো, সে ষাঁড়ের লড়াই, মোরগ লড়াই এবং নৌকা বাইচের জন্য পাগল।",
+                        segments: [
+                            { en: "Like his dead father,", bn: "তার মৃত বাবার মতো," },
+                            { en: "he is crazy", bn: "সে পাগল" },
+                            { en: "about bullfighting,", bn: "ষাঁড়ের লড়াই," },
+                            { en: "cockfighting", bn: "মোরগ লড়াই" },
+                            { en: "and boat racing.", bn: "এবং নৌকা বাইচ নিয়ে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "একই জেদ তার রক্তে প্রবাহিত।",
+                        segments: [
+                            { en: "The same stubbornness", bn: "একই জেদ" },
+                            { en: "flows in his blood.", bn: "তার রক্তে প্রবাহিত।" }
+                        ]
+                    },
+                    {
+                        full_bn: "একবার সে কিছু সিদ্ধান্ত নিলে, কিছুই তাকে থামাতে পারে না।",
+                        segments: [
+                            { en: "Once he decides on something,", bn: "একবার সে কিছু সিদ্ধান্ত নিলে," },
+                            { en: "nothing can stop him.", bn: "কিছুই তাকে থামাতে পারে না।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তার ছোট্ট ছেলে! এখন একজন পুরুষ।",
+                        segments: [
+                            { en: "Her little son!", bn: "তার ছোট্ট ছেলে!" },
+                            { en: "Now a man.", bn: "এখন একজন পুরুষ।" }
+                        ]
+                    },
+                    {
+                        full_bn: "এমনকি তার পনেরো তম জন্মদিন পর্যন্ত এমন কোনো দিন খুব কমই গেছে যখন প্রতিবেশীরা একগাদা অভিযোগ নিয়ে আসেনি।",
+                        segments: [
+                            { en: "Even up to his fifteenth birthday", bn: "এমনকি তার পনেরো তম জন্মদিন পর্যন্ত" },
+                            { en: "barely a day passed", bn: "খুব কম দিনই গেছে" },
+                            { en: "without neighbours appearing", bn: "প্রতিবেশীদের আসা ছাড়া" },
+                            { en: "with a slew of complaints.", bn: "একগাদা অভিযোগ নিয়ে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "মাঝে মাঝে অন্য গ্রাম থেকেও দু-একজন আসত।",
+                        segments: [
+                            { en: "Sometimes one or two turned up", bn: "মাঝে মাঝে দু-একজন আসত" },
+                            { en: "from other villages.", bn: "অন্য গ্রাম থেকে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তারা ঘরের ভেতরে উঁকি দিয়ে জিজ্ঞেস করত, “আমিন কি এখানে থাকে?”",
+                        segments: [
+                            { en: "They peeked into the house", bn: "তারা ঘরের ভেতরে উঁকি দিত" },
+                            { en: "and asked,", bn: "এবং জিজ্ঞেস করত," },
+                            { en: "“Does Ameen live here?”", bn: "“আমিন কি এখানে থাকে?”" }
+                        ]
+                    },
+                    {
+                        full_bn: "সোনাভান দীর্ঘশ্বাস ফেলে বলত, “সে কী করেছে?”",
+                        segments: [
+                            { en: "Sonabhan would sigh,", bn: "সোনাভান দীর্ঘশ্বাস ফেলত," },
+                            { en: "“What did he do?”", bn: "“সে কী করেছে?”" }
+                        ]
+                    },
+                    {
+                        full_bn: "“আপনার ছেলে আমার খেজুরের রস চুরি করেছে! গাছে ঝোলানো হাঁড়িগুলো খালি করে ফেলেছে!”",
+                        segments: [
+                            { en: "“Your son stole my date juice!", bn: "“আপনার ছেলে আমার খেজুরের রস চুরি করেছে!" },
+                            { en: "Emptied the juice pots", bn: "রস রাখার হাঁড়িগুলো খালি করেছে" },
+                            { en: "hanging on the date trees!”", bn: "যা খেজুর গাছে ঝুলছিল!”" }
+                        ]
+                    },
+                    {
+                        full_bn: "সোনাভান আবার দীর্ঘশ্বাস ফেলত। তারপর আগন্তুককে তাকে ক্ষমা করতে বলত।",
+                        segments: [
+                            { en: "Sonabhan would sigh again.", bn: "সোনাভান আবার দীর্ঘশ্বাস ফেলত।" },
+                            { en: "Then ask the visitor", bn: "তারপর আগন্তুককে অনুরোধ করত" },
+                            { en: "to pardon him.", bn: "তাকে ক্ষমা করে দিতে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে এটা বলতে ঘৃণা করত যে সে তার ছেলেকে একা বড় করেছে।",
+                        segments: [
+                            { en: "She hated saying", bn: "সে বলতে ঘৃণা করত" },
+                            { en: "that she’d raised her son alone.", bn: "যে সে তার ছেলেকে একা বড় করেছে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "যদি তার সামর্থ্য থাকত, সে আধা ডজন ডিম এনে আগন্তুকের হাতে তুলে দিয়ে বলত: “অনুগ্রহ করে আপনার বাচ্চাদের জন্য এগুলো নিন।”",
+                        segments: [
+                            { en: "If she could spare them,", bn: "যদি সে দিতে পারত," },
+                            { en: "she would bring half a dozen eggs", bn: "সে আধা ডজন ডিম আনত" },
+                            { en: "and hand them to the visitor:", bn: "এবং আগন্তুকের হাতে দিত:" },
+                            { en: "“Please take these", bn: "“অনুগ্রহ করে এগুলো নিন" },
+                            { en: "for your children.”", bn: "আপনার বাচ্চাদের জন্য।”" }
+                        ]
+                    },
+                    {
+                        full_bn: "রাতে, সোনাভান বিছানা থেকে নামে, হারিকেন বাতিটি শক্ত করে ধরে এবং পা টিপে টিপে আমিনের ঘরে যায়।",
+                        segments: [
+                            { en: "At night,", bn: "রাতে," },
+                            { en: "Sonabhan climbs out of her bed,", bn: "সোনাভান বিছানা থেকে নামে," },
+                            { en: "clutches the hurricane lamp", bn: "হারিকেন বাতিটি আঁকড়ে ধরে" },
+                            { en: "and tiptoes into Ameen’s room.", bn: "এবং পা টিপে আমিনের ঘরে যায়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার বিছানার পাশে দাঁড়ায়, তার ঘুমন্ত ছেলের দিকে তাকায়।",
+                        segments: [
+                            { en: "She stands by his bed,", bn: "সে তার বিছানার পাশে দাঁড়ায়," },
+                            { en: "looks at her sleeping son.", bn: "তার ঘুমন্ত ছেলের দিকে তাকায়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার বাবার মতো নাক ডাকে।",
+                        segments: [
+                            { en: "He snores", bn: "সে নাক ডাকে" },
+                            { en: "like his father.", bn: "তার বাবার মতো।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তার গায়ের রঙ মায়ের মতো ফর্সা এবং নাকটি ছোট।",
+                        segments: [
+                            { en: "He has her light skin", bn: "সে তার ফর্সা ত্বক পেয়েছে" },
+                            { en: "and button nose.", bn: "এবং বোতামের মতো নাক।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার গালে হাত দেয়। তার চওড়া কপাল।",
+                        segments: [
+                            { en: "She touches his cheek.", bn: "সে তার গালে স্পর্শ করে।" },
+                            { en: "His broad forehead.", bn: "তার চওড়া কপাল।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে তার পাশে শোয়ার ইচ্ছা দমন করে।",
+                        segments: [
+                            { en: "She suppresses a desire", bn: "সে একটি ইচ্ছা দমন করে" },
+                            { en: "to lie beside him.", bn: "তার পাশে শোয়ার।" }
+                        ]
+                    },
+                    {
+                        full_bn: "পুরানো দিনের মতো, যখন সে তার শিশুকে জড়িয়ে ঘুমাতো।",
+                        segments: [
+                            { en: "Like the old days,", bn: "পুরানো দিনের মতো," },
+                            { en: "when she slept", bn: "যখন সে ঘুমাতো" },
+                            { en: "cuddling her baby.", bn: "তার শিশুকে জড়িয়ে ধরে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "বৃদ্ধ চৌকিদারের তরুণী স্ত্রীর কাছ থেকে একটি সতর্কতা আসে।",
+                        segments: [
+                            { en: "A warning comes", bn: "একটি সতর্কতা আসে" },
+                            { en: "from old Chowkidar’s young wife.", bn: "বৃদ্ধ চৌকিদারের তরুণী স্ত্রীর কাছ থেকে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "“তোমার মোরগ সামলাও,” সে হুমকি দেয়। “আমি ওটাকে আর আমার ঘরে দেখতে চাই না।”",
+                        segments: [
+                            { en: "“Watch your rooster,”", bn: "“তোমার মোরগ সামলাও,”" },
+                            { en: "she threatens.", bn: "সে হুমকি দেয়।" },
+                            { en: "“I don’t want him", bn: "“আমি তাকে চাই না" },
+                            { en: "in my house again.”", bn: "আবার আমার ঘরে।”" }
+                        ]
+                    },
+                    {
+                        full_bn: "যদি কেউ আমার ছেলেকে স্পর্শ করে, সোনাভান উত্তর দেয়, “তবে তারা এর পরিণতি দেখবে।”",
+                        segments: [
+                            { en: "If someone touches my boy,", bn: "যদি কেউ আমার ছেলেকে স্পর্শ করে," },
+                            { en: "Sonabhan responds,", bn: "সোনাভান উত্তর দেয়," },
+                            { en: "“They’ll see the consequences.”", bn: "“তারা এর পরিণতি দেখবে।”" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে মতিকে পুরো একদিন আটকে রাখে।",
+                        segments: [
+                            { en: "She grounds Moti", bn: "সে মতিকে আটকে রাখে" },
+                            { en: "for an entire day.", bn: "পুরো একদিন।" }
+                        ]
+                    },
+                    {
+                        full_bn: "এটি তাকে দুঃখিত করে। তার অসহায় বন্দিদশা সোনাভানকে খুব কষ্ট দেয়।",
+                        segments: [
+                            { en: "It makes him sad.", bn: "এটি তাকে দুঃখিত করে।" },
+                            { en: "His forlorn captivity", bn: "তার অসহায় বন্দিদশা" },
+                            { en: "crucifies her.", bn: "তাকে তীব্র যন্ত্রণা দেয়।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে পরদিন সকালে তাকে ছেড়ে দেয়।",
+                        segments: [
+                            { en: "She sets him loose", bn: "সে তাকে ছেড়ে দেয়" },
+                            { en: "the following morning.", bn: "পরদিন সকালে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "কিছু ছেলে এসে সোনাভানকে মেলায় মোরগ লড়াইয়ের জন্য মতিকে ধার দিতে বলে।",
+                        segments: [
+                            { en: "Some boys come", bn: "কিছু ছেলে আসে" },
+                            { en: "and ask Sonabhan", bn: "এবং সোনাভানকে বলে" },
+                            { en: "to lend them Moti", bn: "মতিকে ধার দিতে" },
+                            { en: "for cockfighting at a fair.", bn: "মেলায় মোরগ লড়াইয়ের জন্য।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তারা টাকা দিতেও রাজি।",
+                        segments: [
+                            { en: "They are happy to pay.", bn: "তারা টাকা দিতেও রাজি।" }
+                        ]
+                    },
+                    {
+                        full_bn: "“কখনোই না,” সে তাদের বলে। “সে আমার ছেলে।”",
+                        segments: [
+                            { en: "“Never,”", bn: "“কখনোই না,”" },
+                            { en: "she tells them.", bn: "সে তাদের বলে।" },
+                            { en: "“He is my son.”", bn: "“সে আমার ছেলে।”" }
+                        ]
+                    },
+                    {
+                        full_bn: "মতির ডাক ছাড়াই সোমবারের ভোর হয়।",
+                        segments: [
+                            { en: "Monday dawns", bn: "সোমবারের ভোর হয়" },
+                            { en: "without Moti’s crowing.", bn: "মতির ডাক ছাড়াই।" }
+                        ]
+                    },
+                    {
+                        full_bn: "তার ঠান্ডা শরীরটি ডান দিকে কাত হয়ে পড়ে আছে। ঝুড়িতে হেলান দিয়ে।",
+                        segments: [
+                            { en: "His cold body is resting", bn: "তার ঠান্ডা শরীর পড়ে আছে" },
+                            { en: "on its right side.", bn: "তার ডান পাশে।" },
+                            { en: "Lying against the basket.", bn: "ঝুড়িতে হেলান দিয়ে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "চোখ বন্ধ। তার রাজার মতো মাথাটি নিচু।",
+                        segments: [
+                            { en: "Eyes closed.", bn: "চোখ বন্ধ।" },
+                            { en: "His kingly head down.", bn: "তার রাজকীয় মাথাটি নিচু।" }
+                        ]
+                    },
+                    {
+                        full_bn: "কোলে মতির ঝুড়ি নিয়ে সোনাভান নিথর হয়ে বসে আছে।",
+                        segments: [
+                            { en: "With Moti’s basket in her lap,", bn: "কোলে মতির ঝুড়ি নিয়ে," },
+                            { en: "Sonabhan is motionless.", bn: "সোনাভান নিথর।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে মতিকে তার স্বামীর কবরের পাশে দাফন করে।",
+                        segments: [
+                            { en: "She puts Moti to rest", bn: "সে মতিকে সমাহিত করে" },
+                            { en: "beside her husband’s grave.", bn: "তার স্বামীর কবরের পাশে।" }
+                        ]
+                    },
+                    {
+                        full_bn: "সে দীর্ঘশ্বাস ফেলে, খালি উঠান পেরিয়ে হেঁটে যায়, খালি বারান্দায় ওঠে, খালি ঘরে প্রবেশ করে এবং একটি খালি বিছানার প্রান্তে বসে।",
+                        segments: [
+                            { en: "She sighs,", bn: "সে দীর্ঘশ্বাস ফেলে," },
+                            { en: "plods across the empty yard,", bn: "খালি উঠান পেরিয়ে হেঁটে যায়," },
+                            { en: "steps onto an empty veranda,", bn: "খালি বারান্দায় ওঠে," },
+                            { en: "crawls into an empty home", bn: "খালি ঘরে প্রবেশ করে" },
+                            { en: "and sits on the edge", bn: "এবং প্রান্তে বসে" },
+                            { en: "of an empty bed.", bn: "একটি খালি বিছানার।" }
+                        ]
+                    },
+                    {
+                        full_bn: "আরেকটি সকাল হয়... দুপুর এবং বিকেল আসে এবং চলে যায়...",
+                        segments: [
+                            { en: "Another morning breaks....", bn: "আরেকটি সকাল হয়...." },
+                            { en: "Noon and afternoon", bn: "দুপুর এবং বিকেল" },
+                            { en: "come and go....", bn: "আসে এবং চলে যায়...." }
+                        ]
+                    },
+                    {
+                        full_bn: "খাঁচায় পাখিরা প্যাকপ্যাক করে এবং ডাকে... কেউ তাদের বের করে দেয় না।",
+                        segments: [
+                            { en: "The birds in the coops", bn: "খাঁচায় পাখিরা" },
+                            { en: "quack and crow....", bn: "প্যাকপ্যাক করে এবং ডাকে...." },
+                            { en: "No one lets them out.", bn: "কেউ তাদের বের করে দেয় না।" }
+                        ]
+                    },
+                    {
+                        full_bn: "প্রথমবারের মতো, সোনাভানের দরজা খোলে না।",
+                        segments: [
+                            { en: "For the first time,", bn: "প্রথমবারের মতো," },
+                            { en: "Sonabhan’s doors", bn: "সোনাভানের দরজা" },
+                            { en: "do not open.", bn: "খোলে না।" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Text-to-Speech Helper Function
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US'; // Set to English
+                utterance.rate = 0.9; // Slightly slower for clarity
+                utterance.pitch = 1;
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("Text-to-speech not supported in this browser.");
+            }
+        }
+
+        // Function to create phrase segments
+        function createSegment(segment, index, uniqueId) {
+            const span = document.createElement('span');
+            span.className = 'phrase-segment';
+            span.textContent = segment.en + ' ';
+            span.setAttribute('data-index', index);
+            span.setAttribute('id', uniqueId);
+            
+            // Tooltip element
+            const tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            tooltip.textContent = segment.bn;
+            span.appendChild(tooltip);
+
+            // Click Handler
+            span.onclick = (e) => {
+                e.stopPropagation();
+                
+                // Speak the phrase
+                speakText(segment.en);
+
+                // UI Logic
+                const isActive = span.classList.contains('active');
+                document.querySelectorAll('.phrase-segment').forEach(s => s.classList.remove('active'));
+
+                if (!isActive) {
+                    span.classList.add('active');
+                }
+            };
+
+            return span;
+        }
+
+        // Function to render sentences
+        function renderContent(data, containerId) {
+            const container = document.getElementById(containerId);
+            
+            data.sentences.forEach((sentence, sIdx) => {
+                const p = document.createElement('div');
+                p.className = 'sentence-container relative';
+
+                // Construct full English sentence string
+                const fullEnglishSentence = sentence.segments.map(s => s.en).join(' ');
+
+                // 1. Play Sentence Button (At the beginning)
+                const playBtn = document.createElement('button');
+                playBtn.className = 'action-btn play-sentence-btn';
+                playBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                playBtn.title = "Listen to Full Sentence";
+                
+                playBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    speakText(fullEnglishSentence);
+                };
+                p.appendChild(playBtn);
+
+                // 2. Segments (The text itself)
+                sentence.segments.forEach((seg, segIdx) => {
+                    const uniqueId = `${containerId}-s${sIdx}-seg${segIdx}`;
+                    p.appendChild(createSegment(seg, segIdx, uniqueId));
+                });
+
+                // 3. Translation Button (At the end)
+                const transBtn = document.createElement('button');
+                transBtn.className = 'action-btn translate-btn';
+                transBtn.innerHTML = '<i class="fas fa-language"></i>';
+                transBtn.title = "Show Full Sentence Translation";
+                
+                // 4. Translation Display Block
+                const transDiv = document.createElement('div');
+                transDiv.className = 'sentence-translation';
+                transDiv.textContent = sentence.full_bn;
+
+                // Button Logic for Translation
+                transBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    const isVisible = transDiv.style.display === 'block';
+                    transDiv.style.display = isVisible ? 'none' : 'block';
+                    transBtn.classList.toggle('active-btn');
+                };
+
+                p.appendChild(transBtn);
+                p.appendChild(transDiv);
+                container.appendChild(p);
+            });
+        }
+
+        // Render sections
+        const introData = storyData.find(d => d.section === "intro");
+        renderContent(introData, "intro-content");
+
+        const storyBodyData = storyData.find(d => d.section === "story");
+        renderContent(storyBodyData, "story-content");
+
+        // Close tooltips when clicking outside
+        document.body.addEventListener('click', () => {
+             document.querySelectorAll('.phrase-segment').forEach(s => s.classList.remove('active'));
+        });
+
+    </script>
+</body>
+</html>
