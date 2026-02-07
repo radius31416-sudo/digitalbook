@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radius Academy - English Index</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .accordion-content.open {
+            max-height: 1000px; /* Large enough for content */
+            opacity: 1;
+        }
+
+        .rotate-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .rotated {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার সেকশন -->
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-graduation-cap text-yellow-300 text-3xl"></i>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight">Radius Academy</h1>
+                    <p class="text-[10px] text-blue-200 uppercase tracking-widest">Excellence in Education</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-6 text-sm font-medium">
+                <a href="#" class="hover:text-yellow-300 transition-colors">Home</a>
+                <a href="#" class="text-yellow-300 border-b-2 border-yellow-300 pb-1">Digital Book</a>
+                <a href="#" class="hover:text-yellow-300 transition-colors">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- হিরো ব্যানার -->
+    <section class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 py-12 text-center max-w-3xl">
+            <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-700 text-xs md:text-sm font-semibold mb-4">
+                ডিজিটাল ক্লাসরুম
+            </span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                English For Today
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600">
+               For Class Nine-Ten
+            </p>
+            <div class="h-1 w-24 bg-blue-600 mx-auto mt-6 rounded-full"></div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- বাম পাশ: সূচিপত্র -->
+            <div class="lg:col-span-8 order-2 lg:order-1">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <span class="bg-blue-600 w-2 h-6 rounded-sm block"></span>
+                        সূচিপত্র (Table of Contents)
+                    </h3>
+                </div>
+
+                <!-- Accordion Container -->
+                <div id="syllabus-accordion" class="space-y-4">
+                    <!-- JavaScript will inject content here -->
+                </div>
+            </div>
+
+            <!-- ডান পাশ: প্রতিষ্ঠাতা কার্ড -->
+            <div class="lg:col-span-4 order-1 lg:order-2 space-y-6">
+                
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 relative group">
+                    <div class="h-24 bg-gradient-to-br from-indigo-600 to-blue-500"></div>
+                    <div class="px-6 relative">
+                        <div class="w-28 h-28 rounded-full border-4 border-white shadow-lg absolute -top-14 left-1/2 transform -translate-x-1/2 overflow-hidden bg-gray-200">
+                            <img id="founder-img" src="azizul_haque.png" alt="Founder" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        </div>
+                    </div>
+                    
+                    <div class="pt-16 pb-8 px-6 text-center">
+                        <h3 id="founder-name" class="text-xl font-bold text-gray-900">মো: আজিজুল হক</h3>
+                        <p id="founder-title" class="text-sm text-blue-600 font-medium mb-4">প্রতিষ্ঠাতা ও পরিচালক, Radius Academy</p>
+                        
+                        <div class="relative px-2">
+                            <span class="text-4xl text-gray-200 absolute -top-4 -left-1">“</span>
+                            <p id="founder-msg" class="text-gray-600 italic text-sm leading-relaxed">
+                                Radius Academy-তে স্বাগতম। আমাদের ডিজিটাল ক্লাসরুমে ইংরেজি শেখা এখন আরও সহজ এবং আনন্দদায়ক।
+                            </p>
+                            <span class="text-4xl text-gray-200 absolute -bottom-6 -right-1">”</span>
+                        </div>
+
+                        <div class="mt-8 flex justify-center gap-4">
+                             <a href="https://www.facebook.com/profile.php?id=61584518656715" class="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"><i class="fab fa-facebook-f"></i></a>
+                             <a href="#" class="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"><i class="far fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- কন্টাক্ট উইজেট -->
+                <div class="bg-blue-900 rounded-xl p-6 text-white shadow-lg">
+                    <h4 class="font-bold text-lg mb-4 border-b border-blue-700 pb-2">যোগাযোগ</h4>
+                    <ul class="space-y-3 text-sm text-blue-100">
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone"></i> <span>+880 1303751837</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="far fa-envelope"></i> <span>radius3.1416@gmail.com</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span>নতুন ব্যাচে ভর্তি চলছে!</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-sm">
+        <p>&copy; 2026 Radius Academy. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // ১. প্রতিষ্ঠাতা ও একাডেমির তথ্য পরিবর্তন করুন
+        const academyData = {
+            founderName: "মো: আজিজুল হক", 
+            founderTitle: "প্রতিষ্ঠাতা ও পরিচালক, Radius Academy",
+            founderImage: "azizul_haque.png",
+            founderMessage: "Radius Academy-তে স্বাগতম। আমাদের ডিজিটাল ক্লাসরুমে ইংরেজি শেখা এখন আরও সহজ এবং আনন্দদায়ক।"
+        };
+
+        // ২. সূচিপত্র বা সিলেবাস (চ্যাপ্টার ও ইউনিট এখানে যোগ করুন)
+        const syllabus = [
+            {
+                unit: "Unit One: Sense of Self",
+                lessons: [
+                    { id: '1.1', title: "Lesson 1: Mr.Moti", link: "moti.html" },
+                    { id: '1.2', title: "Lesson 2: #", link: "#" },
+                    { id: '1.3', title: "Lesson 3: #", link: "#" },
+                ]
+            },
+            {
+                unit: "Unit Two: Pastimes",
+                lessons: [
+                    { id: '2.1', title: "Lesson 1: #", link: "#" },
+                    { id: '2.2', title: "Lesson 2: #", link: "#" },
+                ]
+            },
+            {
+                unit: "Unit Three: Events and Festivals",
+                lessons: [
+                    { id: '3.1', title: "Lesson 1: #", link: "#" },
+                    { id: '3.2', title: "Lesson 2: #", link: "#" },
+                    { id: '3.3', title: "#", link: "#" },
+                ]
+            },
+            {
+                unit: "Unit Four: Father of the Nation",
+                lessons: [
+                    { id: '4.1', title: "Lesson 1: #", link: "/chapter-1-1.html" },
+                    { id: '4.2', title: "Lesson 2: #", link: "#" },
+                    { id: '4.3', title: "Lesson 3: #", link: "#" },
+                ]
+            },
+            
+        ];
+
+        // ডাটা রেন্ডার করার ফাংশন
+        function initApp() {
+            // প্রতিষ্ঠাতা তথ্য সেট করা
+            document.getElementById('founder-name').innerText = academyData.founderName;
+            document.getElementById('founder-title').innerText = academyData.founderTitle;
+            document.getElementById('founder-msg').innerText = academyData.founderMessage;
+            document.getElementById('founder-img').src = academyData.founderImage;
+
+            // সূচিপত্র রেন্ডার করা
+            const container = document.getElementById('syllabus-accordion');
+            syllabus.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "mb-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg";
+                
+                let lessonsHtml = '';
+                item.lessons.forEach(lesson => {
+                    lessonsHtml += `
+                        <li>
+                            <a href="${lesson.link}" class="flex items-center justify-between group p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+                                <span class="text-gray-700 font-medium group-hover:text-blue-700 flex items-center gap-2 text-sm md:text-base">
+                                    <span class="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full min-w-[30px] text-center">${lesson.id}</span>
+                                    ${lesson.title}
+                                </span>
+                                <i class="fas fa-arrow-right text-gray-300 group-hover:text-blue-600 transition-transform group-hover:translate-x-1"></i>
+                            </a>
+                        </li>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <button onclick="toggleAccordion(${index})" class="w-full flex items-center justify-between p-5 text-left focus:outline-none transition-colors duration-300 hover:bg-blue-50">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-blue-100 text-blue-600">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <span class="font-bold text-lg text-gray-800">${item.unit}</span>
+                        </div>
+                        <i id="icon-${index}" class="fas fa-chevron-down text-gray-500 rotate-icon"></i>
+                    </button>
+                    <div id="content-${index}" class="accordion-content">
+                        <div class="p-4 bg-gray-50 border-t border-gray-100">
+                            <ul class="space-y-2">
+                                ${lessonsHtml}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // আকর্ডিয়ন টগল ফাংশন
+        function toggleAccordion(index) {
+            const content = document.getElementById(`content-${index}`);
+            const icon = document.getElementById(`icon-${index}`);
+            
+            // সব ক্লোজ করতে চাইলে নিচের অংশ ব্যবহার করা যায়, বর্তমানে শুধুমাত্র ক্লিক করাটি কাজ করবে
+            content.classList.toggle('open');
+            icon.classList.toggle('rotated');
+        }
+
+        // পেজ লোড হলে অ্যাপ রান করবে
+        window.onload = initApp;
+    </script>
+</body>
+</html>
