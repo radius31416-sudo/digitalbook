@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Girl by Jamaica Kincaid</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Noto+Serif+Bengali:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #fdfbf7; /* Paper-like background */
+            font-family: 'Lato', sans-serif;
+        }
+        
+        .bengali-text {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+
+        /* Tooltip Arrow */
+        .tooltip-arrow::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        /* Smooth transition for translation slide */
+        .translation-container {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .translation-container.open {
+            max-height: 500px; /* Arbitrary large height */
+            opacity: 1;
+        }
+
+        /* Phrase styling */
+        .phrase-segment {
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .phrase-segment:hover {
+            background-color: #fef08a; /* Yellow-200 */
+            border-bottom: 2px solid #eab308;
+        }
+        .phrase-segment.active {
+            background-color: #fde047; /* Yellow-300 */
+            border-bottom: 2px solid #ca8a04;
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+
+    <div class="max-w-[95%] mx-auto py-12 px-4">
+        
+        <!-- Header -->
+        <header class="text-center mb-12 border-b-4 border-gray-800 pb-6">
+            <h2 class="text-xl font-bold text-gray-600 uppercase tracking-widest mb-2">Lesson 2</h2>
+            <h1 class="text-5xl font-black text-gray-900 mb-2">Girl</h1>
+            <p class="text-2xl font-bold text-gray-700 italic">by Jamaica Kincaid</p>
+            <p class="mt-4 text-gray-500 font-semibold">RADIUS ACADEMY • Azizul Haque</p>
+            <p class="mt-4 text-gray-500 font-semibold">Click phrases for meaning • Click icons for sentences</p>
+        </header>
+
+        <!-- Content Container -->
+        <div id="story-container" class="space-y-6">
+            <!-- Content will be injected here by JS -->
+        </div>
+
+    </div>
+
+    <script>
+        // --- Data Structure ---
+        // Broken down by semicolons/clauses for better educational consumption
+        const storyData = [
+            {
+                fullText: "Wash the white clothes on Monday and put them on the stone heap",
+                fullTranslation: "সোমবার সাদা কাপড়গুলো ধুয়ে পাথরের স্তূপের উপর রাখবে।",
+                segments: [
+                    { text: "Wash the white clothes", meaning: "সাদা কাপড়গুলো ধোবে" },
+                    { text: "on Monday", meaning: "সোমবার" },
+                    { text: "and put them", meaning: "এবং সেগুলো রাখবে" },
+                    { text: "on the stone heap", meaning: "পাথরের স্তূপের উপর" }
+                ]
+            },
+            {
+                fullText: "wash the color clothes on Tuesday and put them on the clothesline to dry",
+                fullTranslation: "মঙ্গলবার রঙিন কাপড়গুলো ধুয়ে শুকানোর জন্য রশিতে মেলে দেবে।",
+                segments: [
+                    { text: "wash the color clothes", meaning: "রঙিন কাপড় ধোবে" },
+                    { text: "on Tuesday", meaning: "মঙ্গলবার" },
+                    { text: "and put them", meaning: "এবং সেগুলো রাখবে" },
+                    { text: "on the clothesline to dry", meaning: "শুকানোর জন্য রশিতে" }
+                ]
+            },
+            {
+                fullText: "don’t walk barehead in the hot sun",
+                fullTranslation: "প্রখর রোদে খালি মাথায় হাঁটবে না।",
+                segments: [
+                    { text: "don’t walk", meaning: "হাঁটবে না" },
+                    { text: "barehead", meaning: "খালি মাথায়" },
+                    { text: "in the hot sun", meaning: "প্রখর রোদে" }
+                ]
+            },
+            {
+                fullText: "cook pumpkin fritters in very hot sweet oil",
+                fullTranslation: "খুব গরম মিষ্টি তেলে কুমড়োর বড়া ভাজবে।",
+                segments: [
+                    { text: "cook pumpkin fritters", meaning: "কুমড়োর বড়া ভাজবে" },
+                    { text: "in very hot", meaning: "খুব গরম" },
+                    { text: "sweet oil", meaning: "মিষ্টি তেলে" }
+                ]
+            },
+            {
+                fullText: "soak your little cloths right after you take them off",
+                fullTranslation: "তোমার ছোট কাপড়গুলো খোলার ঠিক পরেই ভিজিয়ে রাখবে।",
+                segments: [
+                    { text: "soak your little cloths", meaning: "তোমার ছোট কাপড় ভিজিয়ে রাখবে" },
+                    { text: "right after", meaning: "ঠিক পরেই" },
+                    { text: "you take them off", meaning: "তুমি সেগুলো খোলার" }
+                ]
+            },
+            {
+                fullText: "when buying cotton to make yourself a nice blouse, be sure that it doesn’t have gum in it, because that way it won’t hold up well after a wash",
+                fullTranslation: "সুন্দর ব্লাউজ তৈরির জন্য সুতি কাপড় কেনার সময় খেয়াল রাখবে যেন তাতে মাড় না থাকে, কারণ তাহলে ধোয়ার পর তা টিকবে না।",
+                segments: [
+                    { text: "when buying cotton", meaning: "সুতি কাপড় কেনার সময়" },
+                    { text: "to make yourself a nice blouse", meaning: "নিজের জন্য সুন্দর ব্লাউজ বানাতে" },
+                    { text: "be sure that", meaning: "নিশ্চিত হবে যে" },
+                    { text: "it doesn’t have gum in it", meaning: "এতে যেন মাড় না থাকে" },
+                    { text: "because that way", meaning: "কারণ তাহলে" },
+                    { text: "it won’t hold up well", meaning: "এটা ভালো টিকবে না" },
+                    { text: "after a wash", meaning: "ধোয়ার পরে" }
+                ]
+            },
+            {
+                fullText: "soak salt fish overnight before you cook it",
+                fullTranslation: "লোনা ইলিশ রান্না করার আগে সারা রাত ভিজিয়ে রাখবে।",
+                segments: [
+                    { text: "soak salt fish", meaning: "লোনা মাছ/ইলিশ ভিজিয়ে রাখবে" },
+                    { text: "overnight", meaning: "সারারাত" },
+                    { text: "before you cook it", meaning: "রান্না করার আগে" }
+                ]
+            },
+            {
+                fullText: "is it true that you sing benna in Sunday school?",
+                fullTranslation: "এটা কি সত্যি যে তুমি সানডে স্কুলে বেনা (লোকগান) গাও?",
+                segments: [
+                    { text: "is it true that", meaning: "এটা কি সত্যি যে" },
+                    { text: "you sing benna", meaning: "তুমি 'বেনা' গান গাও" },
+                    { text: "in Sunday school?", meaning: "সানডে স্কুলে?" }
+                ]
+            },
+            {
+                fullText: "always eat your food in such a way that it won’t turn someone else’s stomach",
+                fullTranslation: "সবসময় এমনভাবে খাবার খাবে যেন তা দেখে অন্যের বমি না আসে।",
+                segments: [
+                    { text: "always eat your food", meaning: "সবসময় খাবার খাবে" },
+                    { text: "in such a way that", meaning: "এমন ভাবে যে" },
+                    { text: "it won’t turn", meaning: "এটা যেন গুলিয়ে না দেয়" },
+                    { text: "someone else’s stomach", meaning: "অন্য কারো পেট (বমি ভাব)" }
+                ]
+            },
+            {
+                fullText: "on Sundays try to walk like a lady and not like the slut you are so bent on becoming",
+                fullTranslation: "রবিবারগুলোতে ভদ্রমহিলার মতো হাঁটার চেষ্টা করবে, সেই কুলটার মতো নয় যা তুমি হওয়ার জন্য উঠেপড়ে লেগেছ।",
+                segments: [
+                    { text: "on Sundays", meaning: "রবিবারগুলোতে" },
+                    { text: "try to walk like a lady", meaning: "ভদ্রমহিলার মতো হাঁটার চেষ্টা করবে" },
+                    { text: "and not like the slut", meaning: "এবং সেই কুলটার মতো নয়" },
+                    { text: "you are so bent on becoming", meaning: "যা হতে তুমি উঠেপড়ে লেগেছ" }
+                ]
+            },
+            {
+                fullText: "don’t sing benna in Sunday school",
+                fullTranslation: "সানডে স্কুলে বেনা গান গাইবে না।",
+                segments: [
+                    { text: "don’t sing benna", meaning: "বেনা গান গাইবে না" },
+                    { text: "in Sunday school", meaning: "সানডে স্কুলে" }
+                ]
+            },
+            {
+                fullText: "you mustn’t speak to wharf-rat boys, not even to give directions",
+                fullTranslation: "বন্দরের বাজে ছেলেদের সাথে কথা বলবে না, এমনকি রাস্তা দেখানোর জন্যও না।",
+                segments: [
+                    { text: "you mustn’t speak", meaning: "তুমি অবশ্যই কথা বলবে না" },
+                    { text: "to wharf-rat boys", meaning: "বন্দরের বাজে ছেলেদের সাথে" },
+                    { text: "not even", meaning: "এমনকি ... ও না" },
+                    { text: "to give directions", meaning: "রাস্তা দেখানোর জন্য" }
+                ]
+            },
+            {
+                fullText: "don’t eat fruits on the street—flies will follow you",
+                fullTranslation: "রাস্তায় ফল খাবে না—মাছি তোমার পিছু নেবে।",
+                segments: [
+                    { text: "don’t eat fruits", meaning: "ফল খাবে না" },
+                    { text: "on the street", meaning: "রাস্তায়" },
+                    { text: "flies will follow you", meaning: "মাছি তোমার পিছু নেবে" }
+                ]
+            },
+            {
+                fullText: "but I don’t sing benna on Sundays at all and never in Sunday school",
+                fullTranslation: "কিন্তু আমি রবিবারগুলোতে মোটেও বেনা গাই না এবং সানডে স্কুলে তো কখনোই না।",
+                segments: [
+                    { text: "but I don’t sing benna", meaning: "কিন্তু আমি বেনা গাই না" },
+                    { text: "on Sundays at all", meaning: "রবিবারগুলোতে মোটেও" },
+                    { text: "and never", meaning: "এবং কখনোই না" },
+                    { text: "in Sunday school", meaning: "সানডে স্কুলে" }
+                ]
+            },
+            {
+                fullText: "this is how to sew on a button",
+                fullTranslation: "এভাবে বোতাম সেলাই করতে হয়।",
+                segments: [
+                    { text: "this is how to", meaning: "এভাবে..." },
+                    { text: "sew on a button", meaning: "বোতাম সেলাই করতে হয়" }
+                ]
+            },
+            {
+                fullText: "this is how to make a buttonhole for the button you have just sewed on",
+                fullTranslation: "যে বোতামটা মাত্র লাগালে তার জন্য এভাবে বোতামের ঘর তৈরি করতে হয়।",
+                segments: [
+                    { text: "this is how to make", meaning: "এভাবে তৈরি করতে হয়" },
+                    { text: "a buttonhole", meaning: "বোতামের ঘর" },
+                    { text: "for the button", meaning: "সেই বোতামের জন্য" },
+                    { text: "you have just sewed on", meaning: "যা তুমি মাত্র সেলাই করলে" }
+                ]
+            },
+            {
+                fullText: "this is how to hem a dress when you see the hem coming down and so to prevent yourself from looking like the slut I know you are so bent on becoming",
+                fullTranslation: "জামার সেলাই খুলে যেতে দেখলে এভাবেই হেম (সেলাই) করতে হয়, যাতে তোমাকে সেই কুলটার মতো না দেখায় যা তুমি হওয়ার জন্য উঠেপড়ে লেগেছ।",
+                segments: [
+                    { text: "this is how to hem a dress", meaning: "এভাবে জামা সেলাই (হেম) করতে হয়" },
+                    { text: "when you see the hem coming down", meaning: "যখন দেখবে সেলাই খুলে আসছে" },
+                    { text: "and so to prevent yourself", meaning: "এবং নিজেকে রক্ষা করতে" },
+                    { text: "from looking like the slut", meaning: "কুলটার মতো দেখানো থেকে" },
+                    { text: "I know you are so bent on becoming", meaning: "আমি জানি যা হতে তুমি বদ্ধপরিকর" }
+                ]
+            },
+            {
+                fullText: "this is how you iron your father’s khaki shirt so that it doesn’t have a crease",
+                fullTranslation: "এভাবে তোমার বাবার খাকি শার্ট ইস্ত্রি করবে যেন তাতে কোনো ভাঁজ না থাকে।",
+                segments: [
+                    { text: "this is how you iron", meaning: "এভাবে তুমি ইস্ত্রি করবে" },
+                    { text: "your father’s khaki shirt", meaning: "তোমার বাবার খাকি শার্ট" },
+                    { text: "so that it doesn’t have a crease", meaning: "যাতে এতে ভাঁজ না পড়ে" }
+                ]
+            },
+            {
+                fullText: "this is how you grow okra—far from the house, because okra tree harbors red ants",
+                fullTranslation: "ঢেঁড়স এভাবে ফলাবে—বাড়ি থেকে দূরে, কারণ ঢেঁড়স গাছে লাল পিঁপড়ে বাসা বাঁধে।",
+                segments: [
+                    { text: "this is how you grow okra", meaning: "এভাবে তুমি ঢেঁড়স ফলাবে" },
+                    { text: "far from the house", meaning: "বাড়ি থেকে দূরে" },
+                    { text: "because okra tree harbors", meaning: "কারণ ঢেঁড়স গাছ আশ্রয় দেয়" },
+                    { text: "red ants", meaning: "লাল পিঁপড়েদের" }
+                ]
+            },
+            {
+                fullText: "when you are growing dasheen, make sure it gets plenty of water or else it makes your throat itch when you are eating it",
+                fullTranslation: "যখন ওল (বা কচু) ফলাবে, নিশ্চিত করবে যেন প্রচুর জল পায়, নইলে খাওয়ার সময় গলা চুলকাবে।",
+                segments: [
+                    { text: "when you are growing dasheen", meaning: "যখন তুমি ওল/কচু ফলাবে" },
+                    { text: "make sure it gets plenty of water", meaning: "নিশ্চিত করো এটি প্রচুর জল পায়" },
+                    { text: "or else it makes your throat itch", meaning: "নইলে এটি গলা চুলকাবে" },
+                    { text: "when you are eating it", meaning: "যখন তুমি এটি খাবে" }
+                ]
+            },
+            {
+                fullText: "this is how you sweep a whole house",
+                fullTranslation: "এভাবে পুরো ঘর ঝাড়ু দিতে হয়।",
+                segments: [
+                    { text: "this is how", meaning: "এভাবে" },
+                    { text: "you sweep", meaning: "তুমি ঝাড়ু দেবে" },
+                    { text: "a whole house", meaning: "পুরো ঘর" }
+                ]
+            },
+             {
+                fullText: "this is how you smile to someone you don’t like too much",
+                fullTranslation: "যাকে তুমি খুব একটা পছন্দ করো না, তার দিকে এভাবে হাসবে।",
+                segments: [
+                    { text: "this is how you smile", meaning: "এভাবে তুমি হাসবে" },
+                    { text: "to someone", meaning: "কারও প্রতি" },
+                    { text: "you don’t like too much", meaning: "যাকে খুব একটা পছন্দ করো না" }
+                ]
+            },
+            {
+                fullText: "this is how you smile to someone you don’t like at all",
+                fullTranslation: "যাকে তুমি একদমই পছন্দ করো না, তার দিকে এভাবে হাসবে।",
+                segments: [
+                    { text: "this is how you smile", meaning: "এভাবে তুমি হাসবে" },
+                    { text: "to someone", meaning: "কারও প্রতি" },
+                    { text: "you don’t like at all", meaning: "যাকে একদমই পছন্দ করো না" }
+                ]
+            },
+             {
+                fullText: "this is how you smile to someone you like completely",
+                fullTranslation: "যাকে তুমি পুরোপুরি পছন্দ করো, তার দিকে এভাবে হাসবে।",
+                segments: [
+                    { text: "this is how you smile", meaning: "এভাবে তুমি হাসবে" },
+                    { text: "to someone", meaning: "কারও প্রতি" },
+                    { text: "you like completely", meaning: "যাকে পুরোপুরি পছন্দ করো" }
+                ]
+            },
+            {
+                fullText: "this is how you set a table for tea",
+                fullTranslation: "চায়ের জন্য টেবিল এভাবে সাজাতে হয়।",
+                segments: [
+                    { text: "this is how you set a table", meaning: "এভাবে টেবিল সাজাতে হয়" },
+                    { text: "for tea", meaning: "চায়ের জন্য" }
+                ]
+            },
+            {
+                fullText: "this is how you set a table for dinner",
+                fullTranslation: "রাতের খাবারের জন্য টেবিল এভাবে সাজাতে হয়।",
+                segments: [
+                    { text: "this is how you set a table", meaning: "এভাবে টেবিল সাজাতে হয়" },
+                    { text: "for dinner", meaning: "রাতের খাবারের জন্য" }
+                ]
+            },
+            {
+                fullText: "this is how you set a table for dinner with an important guest",
+                fullTranslation: "কোনো গুরুত্বপূর্ণ অতিথির সাথে রাতের খাবারের জন্য টেবিল এভাবে সাজাতে হয়।",
+                segments: [
+                    { text: "this is how you set a table", meaning: "এভাবে টেবিল সাজাতে হয়" },
+                    { text: "for dinner", meaning: "রাতের খাবারের জন্য" },
+                    { text: "with an important guest", meaning: "গুরুত্বপূর্ণ অতিথির সাথে" }
+                ]
+            },
+            {
+                fullText: "this is how to behave in the presence of men who don’t know you very well, and this way they won’t recognize immediately the slut I have warned you against becoming",
+                fullTranslation: "যে পুরুষরা তোমাকে ভালো করে চেনে না তাদের সামনে এভাবে আচরণ করবে, তাহলে আমি তোমাকে যে কুলটা হতে বারণ করেছি, তারা তোমাকে এখনই সেটা বলে চিনতে পারবে না।",
+                segments: [
+                    { text: "this is how to behave", meaning: "এভাবে আচরণ করতে হয়" },
+                    { text: "in the presence of men", meaning: "পুরুষদের সামনে" },
+                    { text: "who don’t know you very well", meaning: "যারা তোমাকে ভালো করে চেনে না" },
+                    { text: "and this way", meaning: "এবং এভাবে" },
+                    { text: "they won’t recognize immediately", meaning: "তারা এখনই চিনতে পারবে না" },
+                    { text: "the slut I have warned you against becoming", meaning: "সেই কুলটাকে যা হতে আমি বারণ করেছি" }
+                ]
+            },
+            {
+                fullText: "be sure to wash every day, even if it is with your own spit",
+                fullTranslation: "রোজ নিজেকে পরিষ্কার করবে, যদি নিজের থুতু দিয়েও করতে হয় তবুও।",
+                segments: [
+                    { text: "be sure to wash every day", meaning: "রোজ ধুতে/পরিষ্কার হতে ভুলবে না" },
+                    { text: "even if it is", meaning: "এমনকি যদি এটা হয়" },
+                    { text: "with your own spit", meaning: "তোমার নিজের থুতু দিয়ে" }
+                ]
+            },
+            {
+                fullText: "don’t squat down to play marbles—you are not a boy, you know",
+                fullTranslation: "মার্বেল খেলতে উবু হয়ে বসবে না—তুমি ছেলে নও, জানো তো।",
+                segments: [
+                    { text: "don’t squat down", meaning: "উবু হয়ে বসবে না" },
+                    { text: "to play marbles", meaning: "মার্বেল খেলতে" },
+                    { text: "you are not a boy", meaning: "তুমি ছেলে নও" },
+                    { text: "you know", meaning: "জানো তো" }
+                ]
+            },
+            {
+                fullText: "don’t pick people’s flowers—you might catch something",
+                fullTranslation: "লোকের গাছের ফুল তুলবে না—তোমার কোনো অসুখ হতে পারে।",
+                segments: [
+                    { text: "don’t pick people’s flowers", meaning: "লোকের ফুল তুলবে না" },
+                    { text: "you might catch something", meaning: "তোমার কিছু (অসুখ) হতে পারে" }
+                ]
+            },
+            {
+                fullText: "don’t throw stones at blackbirds, because it might not be a blackbird at all",
+                fullTranslation: "কালো পাখিদের দিকে পাথর ছুড়বে না, কারণ ওটা হয়তো পাখি না-ও হতে পারে (অশুভ আত্মা)।",
+                segments: [
+                    { text: "don’t throw stones", meaning: "পাথর ছুড়বে না" },
+                    { text: "at blackbirds", meaning: "কালো পাখিদের দিকে" },
+                    { text: "because it might not be", meaning: "কারণ ওটা হয়তো না-ও হতে পারে" },
+                    { text: "a blackbird at all", meaning: "আদৌ কোনো কালো পাখি" }
+                ]
+            },
+             {
+                fullText: "this is how to make a bread pudding",
+                fullTranslation: "এভাবে ব্রেড পুডিং বানাতে হয়।",
+                segments: [
+                    { text: "this is how to make", meaning: "এভাবে বানাতে হয়" },
+                    { text: "a bread pudding", meaning: "ব্রেড পুডিং" }
+                ]
+            },
+            {
+                fullText: "this is how to make doukona; this is how to make pepper pot",
+                fullTranslation: "এভাবে ডুকোনা (এক ধরণের খাবার) বানাতে হয়; এভাবে পেপার-পট (মাংসের ঝোল) বানাতে হয়।",
+                segments: [
+                    { text: "this is how to make doukona", meaning: "এভাবে ডুকোনা বানাতে হয়" },
+                    { text: "this is how to make pepper pot", meaning: "এভাবে পেপার-পট বানাতে হয়" }
+                ]
+            },
+             {
+                fullText: "this is how to make a good medicine for a cold",
+                fullTranslation: "এভাবে সর্দির ভালো ওষুধ বানাতে হয়।",
+                segments: [
+                    { text: "this is how to make", meaning: "এভাবে বানাতে হয়" },
+                    { text: "a good medicine", meaning: "একটি ভালো ওষুধ" },
+                    { text: "for a cold", meaning: "সর্দির জন্য" }
+                ]
+            },
+             {
+                fullText: "this is how to catch a fish",
+                fullTranslation: "এভাবে মাছ ধরতে হয়।",
+                segments: [
+                    { text: "this is how", meaning: "এভাবে" },
+                    { text: "to catch a fish", meaning: "মাছ ধরতে হয়" }
+                ]
+            },
+            {
+                fullText: "this is how to throw back a fish you don’t like, and that way something bad won’t fall on you",
+                fullTranslation: "পছন্দ না হওয়া মাছ এভাবে জলে ফেরত দিতে হয়, তাহলে তোমার কোনো অমঙ্গল হবে না।",
+                segments: [
+                    { text: "this is how to throw back", meaning: "এভাবে ফেরত দিতে হয়" },
+                    { text: "a fish you don’t like", meaning: "যে মাছ তুমি পছন্দ করো না" },
+                    { text: "and that way", meaning: "এবং তাহলে" },
+                    { text: "something bad won’t fall on you", meaning: "তোমার ওপর খারাপ কিছু আসবে না" }
+                ]
+            },
+            {
+                fullText: "this is how to bully a man; this is how a man bullies you",
+                fullTranslation: "এভাবে পুরুষকে দাবিয়ে রাখতে হয়; এভাবে পুরুষ তোমাকে দাবিয়ে রাখে।",
+                segments: [
+                    { text: "this is how to bully a man", meaning: "এভাবে পুরুষকে দাবিয়ে রাখতে হয়" },
+                    { text: "this is how a man bullies you", meaning: "এভাবে পুরুষ তোমাকে দাবিয়ে রাখে" }
+                ]
+            },
+            {
+                fullText: "this is how to love a man, and if this doesn’t work there are other ways, and if they don’t work don’t feel too bad about giving up",
+                fullTranslation: "এভাবে পুরুষকে ভালোবাসতে হয়, আর যদি এটা কাজ না করে তবে অন্য উপায় আছে, আর যদি সেগুলোও কাজ না করে তবে হাল ছেড়ে দেওয়ায় মন খারাপ করো না।",
+                segments: [
+                    { text: "this is how to love a man", meaning: "এভাবে পুরুষকে ভালোবাসতে হয়" },
+                    { text: "and if this doesn’t work", meaning: "আর যদি এটা কাজ না করে" },
+                    { text: "there are other ways", meaning: "অন্য উপায় আছে" },
+                    { text: "and if they don’t work", meaning: "আর যদি সেগুলো কাজ না করে" },
+                    { text: "don’t feel too bad", meaning: "বেশি মন খারাপ করো না" },
+                    { text: "about giving up", meaning: "হাল ছেড়ে দেওয়া নিয়ে" }
+                ]
+            },
+            {
+                fullText: "this is how to spit up in the air if you feel like it, and this is how to move quick so that it doesn’t fall on you",
+                fullTranslation: "ইচ্ছে হলে এভাবে শূন্যে থুতু ছিটাতে হয়, আর এভাবে চট করে সরে যেতে হয় যেন সেটা নিজের গায়ে না পড়ে।",
+                segments: [
+                    { text: "this is how to spit up in the air", meaning: "এভাবে শূন্যে থুতু ছিটাতে হয়" },
+                    { text: "if you feel like it", meaning: "যদি তোমার ইচ্ছে হয়" },
+                    { text: "and this is how to move quick", meaning: "আর এভাবে চট করে সরতে হয়" },
+                    { text: "so that it doesn’t fall on you", meaning: "যেন এটা তোমার ওপর না পড়ে" }
+                ]
+            },
+            {
+                fullText: "this is how to make ends meet",
+                fullTranslation: "এভাবে সংসার খরচ চালাতে হয়।",
+                segments: [
+                    { text: "this is how to", meaning: "এভাবে" },
+                    { text: "make ends meet", meaning: "সংসার/খরচ চালাতে হয়" }
+                ]
+            },
+            {
+                fullText: "always squeeze bread to make sure it’s fresh",
+                fullTranslation: "পাউরুটি টাটকা কি না দেখার জন্য সবসময় টিপে দেখবে।",
+                segments: [
+                    { text: "always squeeze bread", meaning: "সবসময় রুটি টিপে দেখবে" },
+                    { text: "to make sure it’s fresh", meaning: "নিশ্চিত হতে যে এটা টাটকা" }
+                ]
+            },
+            {
+                fullText: "but what if the baker won’t let me feel the bread?",
+                fullTranslation: "কিন্তু রুটিওয়ালা যদি আমাকে রুটি ছুঁতে না দেয়?",
+                segments: [
+                    { text: "but what if", meaning: "কিন্তু যদি এমন হয়" },
+                    { text: "the baker won’t let me", meaning: "রুটিওয়ালা আমাকে দেবে না" },
+                    { text: "feel the bread?", meaning: "রুটি স্পর্শ করতে?" }
+                ]
+            },
+            {
+                fullText: "you mean to say that after all you are really going to be the kind of woman who the baker won’t let near the bread?",
+                fullTranslation: "তুমি কি বলতে চাও যে এত কিছুর পর তুমি সত্যিই সেই ধরণের মেয়ে হবে যাকে রুটিওয়ালা রুটির কাছেও ঘেঁষতে দেবে না?",
+                segments: [
+                    { text: "you mean to say that", meaning: "তুমি কি বলতে চাও যে" },
+                    { text: "after all", meaning: "এত কিছুর পর" },
+                    { text: "you are really going to be", meaning: "তুমি সত্যিই হতে যাচ্ছো" },
+                    { text: "the kind of woman", meaning: "সেই ধরণের মেয়ে" },
+                    { text: "who the baker", meaning: "যাকে রুটিওয়ালা" },
+                    { text: "won’t let near the bread?", meaning: "রুটির কাছেও ঘেঁষতে দেবে না?" }
+                ]
+            }
+        ];
+
+        // --- Logic ---
+
+        const container = document.getElementById('story-container');
+        const synth = window.speechSynthesis;
+
+        function speakText(text) {
+            // Cancel any playing audio first
+            synth.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.pitch = 1;
+            synth.speak(utterance);
+        }
+
+        // Initialize icons
+        lucide.createIcons();
+
+        // Render Content
+        storyData.forEach((item, index) => {
+            // Container for the Sentence Block
+            const block = document.createElement('div');
+            block.className = 'bg-white/50 border border-transparent rounded-xl p-6 transition-all duration-300 hover:bg-white hover:shadow-lg hover:border-gray-200 group';
+
+            // Top Row: Speaker + Text + Translator
+            const topRow = document.createElement('div');
+            topRow.className = 'flex items-start gap-4';
+
+            // 1. Start Speaker Icon
+            const startBtn = document.createElement('button');
+            startBtn.className = 'mt-1 p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-blue-600 hover:text-white transition-colors flex-shrink-0';
+            startBtn.innerHTML = '<i data-lucide="volume-2" width="24" height="24"></i>';
+            startBtn.onclick = () => speakText(item.fullText);
+            
+            // 2. Text Content (Phrases)
+            const textContent = document.createElement('div');
+            textContent.className = 'flex-grow text-2xl md:text-3xl leading-relaxed text-gray-800 font-bold tracking-wide select-none';
+            
+            item.segments.forEach(seg => {
+                const span = document.createElement('span');
+                span.className = 'phrase-segment cursor-pointer relative inline-block mx-1 px-1 rounded';
+                span.innerText = seg.text;
+                
+                // Tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip-arrow absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 w-max max-w-[300px] bg-gray-900 text-white text-xl font-bold bengali-text p-3 rounded-lg shadow-xl hidden z-20 pointer-events-none text-center';
+                tooltip.innerText = seg.meaning;
+
+                span.appendChild(tooltip);
+
+                // Interaction
+                span.onclick = (e) => {
+                    e.stopPropagation(); // Prevent bubbling
+                    
+                    // Reset all other active states
+                    document.querySelectorAll('.phrase-segment').forEach(s => s.classList.remove('active'));
+                    document.querySelectorAll('.phrase-segment div').forEach(t => t.classList.add('hidden'));
+
+                    // Activate current
+                    span.classList.add('active');
+                    tooltip.classList.remove('hidden');
+                    speakText(seg.text);
+
+                    // Auto hide after 4 seconds
+                    setTimeout(() => {
+                        span.classList.remove('active');
+                        tooltip.classList.add('hidden');
+                    }, 4000);
+                };
+
+                textContent.appendChild(span);
+            });
+
+            // 3. End Language Icon
+            const endBtn = document.createElement('button');
+            endBtn.className = 'mt-1 p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-green-600 hover:text-white transition-colors flex-shrink-0';
+            endBtn.innerHTML = '<i data-lucide="languages" width="24" height="24"></i>';
+            
+            // 4. Translation Container
+            const translationDiv = document.createElement('div');
+            translationDiv.className = 'translation-container mt-2';
+            const translationText = document.createElement('div');
+            translationText.className = 'p-4 bg-gray-800 text-white rounded-lg text-2xl md:text-3xl font-bold bengali-text leading-relaxed shadow-inner border-l-4 border-green-500 mt-4';
+            translationText.innerText = item.fullTranslation;
+            translationDiv.appendChild(translationText);
+
+            // Toggle Translation Logic
+            endBtn.onclick = () => {
+                const isOpen = translationDiv.classList.contains('open');
+                if (isOpen) {
+                    translationDiv.classList.remove('open');
+                    endBtn.classList.remove('bg-green-600', 'text-white');
+                    endBtn.classList.add('bg-gray-200', 'text-gray-700');
+                } else {
+                    translationDiv.classList.add('open');
+                    endBtn.classList.add('bg-green-600', 'text-white');
+                    endBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                }
+            };
+
+            // Assemble
+            topRow.appendChild(startBtn);
+            topRow.appendChild(textContent);
+            topRow.appendChild(endBtn);
+            
+            block.appendChild(topRow);
+            block.appendChild(translationDiv);
+            container.appendChild(block);
+        });
+
+        // Re-run icons after DOM generation
+        lucide.createIcons();
+
+        // Global click to clear tooltips
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('.phrase-segment')) {
+                document.querySelectorAll('.phrase-segment').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.phrase-segment div').forEach(t => t.classList.add('hidden'));
+            }
+        });
+
+    </script>
+</body>
+</html>
