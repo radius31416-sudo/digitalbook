@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Greed of the Mighty Rivers - Interactive Lesson</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Noto+Serif+Bengali:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom Font Definitions */
+        .font-lato { font-family: 'Lato', sans-serif; }
+        .font-bengali { font-family: 'Noto Serif Bengali', serif; }
+
+        /* Smooth Transition for Translation Slide */
+        .translation-content {
+            transition: max-height 0.4s ease-out, opacity 0.4s ease-out, margin 0.4s;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .translation-content.active {
+            max-height: 200px; /* Arbitrary large height to accommodate text */
+            opacity: 1;
+            margin-top: 0.75rem;
+        }
+
+        /* Tooltip Arrow */
+        .tooltip-arrow {
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; 
+            height: 0; 
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #1f2937; /* Matches gray-800 */
+        }
+
+        /* Hide scrollbar for cleaner look if needed */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: #fdfbf7; 
+        }
+        body::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-[#fdfbf7] text-gray-800 font-lato min-h-screen flex flex-col items-center py-10">
+
+    <!-- Header -->
+    <header class="w-full max-w-[95%] mb-10 border-b-2 border-gray-300 pb-6">
+        <h1 class="text-4xl md:text-5xl font-black text-gray-900 text-center tracking-tight">
+            The Greed of the Mighty Rivers
+        </h1>
+        <p class="text-center text-gray-500 mt-2 text-lg font-bold uppercase tracking-widest">Interactive English Lesson</p>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app" class="w-full max-w-[95%] space-y-8 pb-20">
+        <!-- Content will be injected here by JavaScript -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-400 text-sm font-bold mt-auto pb-6">
+        Click phrases for meaning • Click icons for full sentence actions
+    </footer>
+
+    <script>
+        // --- Data Structure ---
+        const storyData = [
+            {
+                id: 1,
+                fullText: "Meherjan lives in a slum on the Sirajgonj Town Protection Embankment.",
+                translation: "মেহেরজান সিরাজগঞ্জ শহর রক্ষা বাঁধের ওপর এক বস্তিতে বাস করে।",
+                segments: [
+                    { en: "Meherjan lives", bn: "মেহেরজান বাস করে" },
+                    { en: "in a slum", bn: "এক বস্তিতে" },
+                    { en: "on the Sirajgonj Town Protection Embankment.", bn: "সিরাজগঞ্জ শহর রক্ষা বাঁধের ওপর।" }
+                ]
+            },
+            {
+                id: 2,
+                fullText: "The whispering wind from the river Jamuna makes the fire unsteady.",
+                translation: "যমুনা নদীর সাঁই সাঁই বাতাস আগুনের শিখাকে অস্থির করে তোলে।",
+                segments: [
+                    { en: "The whispering wind", bn: "সাঁই সাঁই বাতাস" },
+                    { en: "from the river Jamuna", bn: "যমুনা নদী থেকে" },
+                    { en: "makes the fire unsteady.", bn: "আগুনকে অস্থির করে তোলে।" }
+                ]
+            },
+            {
+                id: 3,
+                fullText: "The dancing flames remind Meherjan of the turmoil in her life.",
+                translation: "আগুনের এই কম্পমান শিখা মেহেরজানকে তার জীবনের দুঃখ-দুর্দশার কথা মনে করিয়ে দেয়।",
+                segments: [
+                    { en: "The dancing flames", bn: "কম্পমান শিখা" },
+                    { en: "remind Meherjan", bn: "মেহেরজানকে মনে করিয়ে দেয়" },
+                    { en: "of the turmoil", bn: "দুঃখ-দুর্দশার কথা" },
+                    { en: "in her life.", bn: "তার জীবনে।" }
+                ]
+            },
+            {
+                id: 4,
+                fullText: "Not long ago Meherjan had everything— a family, arable land and cattle.",
+                translation: "বেশি দিন আগের কথা নয়, মেহেরজানের সবকিছুই ছিল— একটি পরিবার, আবাদি জমি এবং গবাদি পশু।",
+                segments: [
+                    { en: "Not long ago", bn: "বেশি দিন আগের কথা নয়" },
+                    { en: "Meherjan had everything", bn: "মেহেরজানের সবকিছুই ছিল" },
+                    { en: "a family, arable land", bn: "পরিবার, আবাদি জমি" },
+                    { en: "and cattle.", bn: "এবং গবাদি পশু।" }
+                ]
+            },
+            {
+                id: 5,
+                fullText: "The erosion of the Jamuna gradually consumed all her land property.",
+                translation: "যমুনার ভাঙন ধীরে ধীরে তার সমস্ত জমিজমা গ্রাস করে নিয়েছে।",
+                segments: [
+                    { en: "The erosion of the Jamuna", bn: "যমুনার ভাঙন" },
+                    { en: "gradually consumed", bn: "ধীরে ধীরে গ্রাস করেছে" },
+                    { en: "all her land property.", bn: "তার সব জমিজমা।" }
+                ]
+            },
+            {
+                id: 6,
+                fullText: "It finally claimed her only shelter during the last monsoon.",
+                translation: "অবশেষে গত বর্ষাকালে এটি তার একমাত্র আশ্রয়টুকুও কেড়ে নিয়েছে।",
+                segments: [
+                    { en: "It finally claimed", bn: "অবশেষে এটি কেড়ে নিয়েছে" },
+                    { en: "her only shelter", bn: "তার একমাত্র আশ্রয়" },
+                    { en: "during the last monsoon.", bn: "গত বর্ষাকালে।" }
+                ]
+            },
+            {
+                id: 7,
+                fullText: "It took the river only a day to devour Meher's house, trees, vegetable garden and the bamboo bush.",
+                translation: "মেহেরের ঘরবাড়ি, গাছপালা, সবজির বাগান এবং বাঁশঝাড় গ্রাস করতে নদীটির মাত্র একদিন সময় লেগেছিল।",
+                segments: [
+                    { en: "It took the river only a day", bn: "নদীটির মাত্র একদিন সময় লেগেছিল" },
+                    { en: "to devour Meher's house,", bn: "মেহেরের ঘর গ্রাস করতে," },
+                    { en: "trees, vegetable garden", bn: "গাছপালা, সবজির বাগান" },
+                    { en: "and the bamboo bush.", bn: "এবং বাঁশঝাড়।" }
+                ]
+            },
+            {
+                id: 8,
+                fullText: "She had a happy family once.",
+                translation: "একসময় তার একটি সুখী পরিবার ছিল।",
+                segments: [
+                    { en: "She had", bn: "তার ছিল" },
+                    { en: "a happy family once.", bn: "একসময় একটি সুখী পরিবার।" }
+                ]
+            },
+            {
+                id: 9,
+                fullText: "Over the years, she lost her husband and her family to diseases that cruel hunger and poverty brought to the family.",
+                translation: "বিগত বছরগুলোতে, নিষ্ঠুর ক্ষুধা ও দারিদ্র্য পরিবারে যে রোগশোক নিয়ে এসেছিল তাতে সে তার স্বামী ও স্বজনদের হারিয়েছে।",
+                segments: [
+                    { en: "Over the years,", bn: "বিগত বছরগুলোতে," },
+                    { en: "she lost her husband", bn: "সে তার স্বামীকে হারিয়েছে" },
+                    { en: "and her family", bn: "এবং তার পরিবারকে" },
+                    { en: "to diseases", bn: "রোগশোকের কাছে" },
+                    { en: "that cruel hunger and poverty", bn: "যা নিষ্ঠুর ক্ষুধা ও দারিদ্র্য" },
+                    { en: "brought to the family.", bn: "পরিবারে এনেছিল।" }
+                ]
+            },
+            {
+                id: 10,
+                fullText: "Now, she is the only one left to live on with the loss and the pain.",
+                translation: "এখন, শোক ও ব্যথা নিয়ে বেঁচে থাকার জন্য কেবল সেই অবশিষ্ট আছে।",
+                segments: [
+                    { en: "Now, she is the only one left", bn: "এখন কেবল সেই অবশিষ্ট আছে" },
+                    { en: "to live on", bn: "বেঁচে থাকার জন্য" },
+                    { en: "with the loss and the pain.", bn: "শোক ও ব্যথা নিয়ে।" }
+                ]
+            },
+            {
+                id: 11,
+                fullText: "The greedy Jamuna has shattered her dreams and happiness.",
+                translation: "লোভী যমুনা তার স্বপ্ন ও সুখ চূর্ণবিচূর্ণ করে দিয়েছে।",
+                segments: [
+                    { en: "The greedy Jamuna", bn: "লোভী যমুনা" },
+                    { en: "has shattered", bn: "চূর্ণবিচূর্ণ করে দিয়েছে" },
+                    { en: "her dreams and happiness.", bn: "তার স্বপ্ন ও সুখ।" }
+                ]
+            },
+            {
+                id: 12,
+                fullText: "There are thousand others waiting to share the same fate like Meherjan.",
+                translation: "মেহেরজানের মতো একই ভাগ্যের শরিক হওয়ার অপেক্ষায় আছে আরও হাজারো মানুষ।",
+                segments: [
+                    { en: "There are thousand others", bn: "আরও হাজারো মানুষ আছে" },
+                    { en: "waiting to share", bn: "শরিক হওয়ার অপেক্ষায়" },
+                    { en: "the same fate like Meherjan.", bn: "মেহেরজানের মতো একই ভাগ্যের।" }
+                ]
+            },
+            {
+                id: 13,
+                fullText: "Bangladesh is a land of rivers, some of whose banks overflow or erode during monsoon.",
+                translation: "বাংলাদেশ নদীমাতৃক দেশ, বর্ষাকালে যার কোনো কোনোটির তীর উপচে পড়ে অথবা ভেঙে যায়।",
+                segments: [
+                    { en: "Bangladesh is a land of rivers,", bn: "বাংলাদেশ নদীমাতৃক দেশ," },
+                    { en: "some of whose banks", bn: "যার কোনো কোনোটির তীর" },
+                    { en: "overflow or erode", bn: "উপচে পড়ে অথবা ভেঙে যায়" },
+                    { en: "during monsoon.", bn: "বর্ষাকালে।" }
+                ]
+            },
+            {
+                id: 14,
+                fullText: "Erosion is a harsh reality for the people living along the river banks.",
+                translation: "নদীর তীরে বসবাসরত মানুষের জন্য নদীভাঙন এক রূঢ় বাস্তবতা।",
+                segments: [
+                    { en: "Erosion is a harsh reality", bn: "ভাঙন এক রূঢ় বাস্তবতা" },
+                    { en: "for the people", bn: "মানুষের জন্য" },
+                    { en: "living along the river banks.", bn: "যারা নদীর তীরে বাস করে।" }
+                ]
+            },
+            {
+                id: 15,
+                fullText: "During each monsoon many more villages are threatened by the mighty rivers like the Jamuna, the Padma and the Meghna.",
+                translation: "প্রতি বর্ষায় যমুনা, পদ্মা ও মেঘনার মতো শক্তিশালী নদীগুলো আরও অনেক গ্রামকে হুমকির মুখে ফেলে।",
+                segments: [
+                    { en: "During each monsoon", bn: "প্রতি বর্ষায়" },
+                    { en: "many more villages", bn: "আরও অনেক গ্রাম" },
+                    { en: "are threatened", bn: "হুমকির মুখে পড়ে" },
+                    { en: "by the mighty rivers", bn: "শক্তিশালী নদীগুলো দ্বারা" },
+                    { en: "like the Jamuna, the Padma and the Meghna.", bn: "যেমন যমুনা, পদ্মা ও মেঘনা।" }
+                ]
+            },
+            {
+                id: 16,
+                fullText: "It is estimated that river erosion makes at least 100,000 people homeless every year in Bangladesh.",
+                translation: "ধারণা করা হয় যে, বাংলাদেশে নদীভাঙন প্রতিবছর অন্তত এক লক্ষ মানুষকে গৃহহীন করে।",
+                segments: [
+                    { en: "It is estimated that", bn: "ধারণা করা হয় যে" },
+                    { en: "river erosion makes", bn: "নদীভাঙন করে" },
+                    { en: "at least 100,000 people homeless", bn: "অন্তত এক লক্ষ মানুষকে গৃহহীন" },
+                    { en: "every year in Bangladesh.", bn: "বাংলাদেশে প্রতিবছর।" }
+                ]
+            },
+            {
+                id: 17,
+                fullText: "In fact, river erosion is one of the main dangers caused by climate change.",
+                translation: "বস্তুত, জলবায়ু পরিবর্তনের ফলে সৃষ্ট প্রধান বিপদগুলোর মধ্যে নদীভাঙন অন্যতম।",
+                segments: [
+                    { en: "In fact,", bn: "বস্তুত," },
+                    { en: "river erosion is", bn: "নদীভাঙন হলো" },
+                    { en: "one of the main dangers", bn: "অন্যতম প্রধান বিপদ" },
+                    { en: "caused by climate change.", bn: "জলবায়ু পরিবর্তনের ফলে সৃষ্ট।" }
+                ]
+            },
+            {
+                id: 18,
+                fullText: "If we can't take prompt actions to adapt to climate change, there will be thousands of more Meherjans in our towns and villages every year.",
+                translation: "যদি আমরা জলবায়ু পরিবর্তনের সাথে খাপ খাইয়ে নিতে দ্রুত পদক্ষেপ নিতে না পারি, তবে প্রতিবছর আমাদের শহর ও গ্রামগুলোতে আরও হাজার হাজার মেহেরজান তৈরি হবে।",
+                segments: [
+                    { en: "If we can't take prompt actions", bn: "যদি আমরা দ্রুত পদক্ষেপ না নেই" },
+                    { en: "to adapt to climate change,", bn: "জলবায়ু পরিবর্তনের সাথে খাপ খাওয়াতে," },
+                    { en: "there will be", bn: "সেখানে তৈরি হবে" },
+                    { en: "thousands of more Meherjans", bn: "আরও হাজার হাজার মেহেরজান" },
+                    { en: "in our towns and villages", bn: "আমাদের শহর ও গ্রামে" },
+                    { en: "every year.", bn: "প্রতিবছর।" }
+                ]
+            }
+        ];
+
+        // --- Core Logic ---
+
+        const app = document.getElementById('app');
+        const synth = window.speechSynthesis;
+        let currentTooltipId = null;
+
+        // Helper: SVG Icons
+        const icons = {
+            speaker: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-blue-600 hover:text-blue-800 transition-colors"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06zM18.584 5.106a.75.75 0 011.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 11-1.06-1.06 2.75 2.75 0 000-11.668.75.75 0 010-1.06z" /><path d="M15.932 7.757a.75.75 0 011.061 0 6 6 0 010 8.486.75.75 0 01-1.06-1.061 4.5 4.5 0 000-6.364.75.75 0 010-1.06z" /></svg>`,
+            translate: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-emerald-600 hover:text-emerald-800 transition-colors"><path d="M21.721 12.752a9.711 9.711 0 00-.945-5.003 12.754 12.754 0 01-4.339 2.708 18.991 18.991 0 01-.214 4.772 17.165 17.165 0 005.498-2.477zM14.634 15.55a17.324 17.324 0 00.332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 00.332 4.647 17.387 17.387 0 005.268 0zM9.772 17.119a18.994 18.994 0 01-2.953-2.953 6 6 0 000 5.906 17.386 17.386 0 002.953-2.953zM14.228 17.119a18.994 18.994 0 012.953-2.953 6 6 0 000 5.906 17.386 17.386 0 00-2.953-2.953zM16.88 12.752a18.992 18.992 0 00-.214-4.772 12.754 12.754 0 01-4.34-2.708 9.711 9.711 0 00-.944 5.003 17.165 17.165 0 005.498 2.477zM4.162 12.752a17.165 17.165 0 005.497 2.477c-.1.286-.21.568-.325.845a2.1 2.1 0 001.378 2.66 2.1 2.1 0 002.66-1.378c.612-1.5.964-3.109 1.029-4.781A9.01 9.01 0 0022 12c0-4.968-4.032-9-9-9s-9 4.032-9 9a8.997 8.997 0 00.162.752z" /></svg>`
+        };
+
+        // Function: Speak Text
+        function speak(text) {
+            if (synth.speaking) synth.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // Slightly slower for education
+            utterance.pitch = 1.0;
+            
+            synth.speak(utterance);
+        }
+
+        // Function: Render Sentences
+        function renderStory() {
+            storyData.forEach((item, index) => {
+                const sentenceContainer = document.createElement('div');
+                sentenceContainer.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-200 transition hover:shadow-md';
+                
+                // --- Top Row: Speaker + Text + Translator ---
+                const row = document.createElement('div');
+                row.className = 'flex items-start gap-4';
+
+                // 1. Speaker Icon (Start)
+                const speakerBtn = document.createElement('button');
+                speakerBtn.innerHTML = icons.speaker;
+                speakerBtn.className = 'mt-1 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-full';
+                speakerBtn.title = "Listen to full sentence";
+                speakerBtn.onclick = () => speak(item.fullText);
+                
+                // 2. Text Area (Phrases)
+                const textWrapper = document.createElement('div');
+                textWrapper.className = 'flex-grow text-2xl md:text-3xl leading-relaxed font-bold text-gray-800';
+                
+                // Build phrase spans
+                item.segments.forEach((segment, segIndex) => {
+                    // Wrapper for relative positioning of tooltip
+                    const phraseSpan = document.createElement('span');
+                    phraseSpan.className = 'relative inline-block cursor-pointer px-1 mx-0.5 rounded transition duration-200 hover:bg-yellow-200 hover:text-black border-b-2 border-transparent hover:border-yellow-500';
+                    phraseSpan.textContent = segment.en + ' '; // Add space for natural flow
+                    
+                    // Tooltip Logic
+                    const tooltipId = `tooltip-${item.id}-${segIndex}`;
+                    
+                    const tooltip = document.createElement('div');
+                    tooltip.id = tooltipId;
+                    tooltip.className = 'absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 w-max max-w-[250px] bg-gray-800 text-white text-lg font-bengali font-bold py-2 px-4 rounded-lg shadow-xl z-50 hidden pointer-events-none';
+                    tooltip.innerHTML = `
+                        ${segment.bn}
+                        <div class="tooltip-arrow"></div>
+                    `;
+
+                    // Interaction: Click Phrase
+                    phraseSpan.onclick = (e) => {
+                        e.stopPropagation();
+                        
+                        // Speak logic
+                        speak(segment.en);
+                        
+                        // Toggle Tooltip
+                        const allTooltips = document.querySelectorAll('[id^="tooltip-"]');
+                        allTooltips.forEach(t => {
+                            if(t.id !== tooltipId) t.classList.add('hidden');
+                        });
+                        
+                        tooltip.classList.remove('hidden');
+                        currentTooltipId = tooltipId;
+                    };
+
+                    phraseSpan.appendChild(tooltip);
+                    textWrapper.appendChild(phraseSpan);
+                });
+
+                // 3. Language Icon (End)
+                const transBtn = document.createElement('button');
+                transBtn.innerHTML = icons.translate;
+                transBtn.className = 'mt-1 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-full';
+                transBtn.title = "Show full translation";
+                
+                // 4. Translation Container (Hidden by default)
+                const transBox = document.createElement('div');
+                transBox.className = 'translation-content w-full bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg';
+                transBox.innerHTML = `
+                    <p class="font-bengali text-2xl md:text-3xl font-bold text-emerald-900 py-4 px-6 leading-relaxed">
+                        ${item.translation}
+                    </p>
+                `;
+
+                // Toggle Translation Logic
+                transBtn.onclick = () => {
+                    transBox.classList.toggle('active');
+                };
+
+                // Append elements
+                row.appendChild(speakerBtn);
+                row.appendChild(textWrapper);
+                row.appendChild(transBtn);
+                
+                sentenceContainer.appendChild(row);
+                sentenceContainer.appendChild(transBox);
+                
+                app.appendChild(sentenceContainer);
+            });
+        }
+
+        // --- Initialization ---
+        
+        // Close tooltips when clicking anywhere else
+        document.addEventListener('click', (e) => {
+            if (currentTooltipId) {
+                const activeTooltip = document.getElementById(currentTooltipId);
+                // If click is not inside the active tooltip's parent span
+                if (activeTooltip && !activeTooltip.parentElement.contains(e.target)) {
+                    activeTooltip.classList.add('hidden');
+                    currentTooltipId = null;
+                }
+            }
+        });
+
+        // Initialize
+        renderStory();
+
+    </script>
+</body>
+</html>
