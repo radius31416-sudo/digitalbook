@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: O Me! O Life!</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #fdfbf7; /* Paper-like background */
+            font-family: 'Lato', sans-serif;
+        }
+        
+        .bengali-font {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+
+        /* Custom Tooltip Styling */
+        .custom-tooltip {
+            position: absolute;
+            background-color: #1f2937; /* Dark Gray/Black */
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-family: 'Noto Serif Bengali', serif;
+            font-weight: 700; /* Bold */
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            transform: translate(-50%, -120%);
+            white-space: nowrap;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .custom-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        .tooltip-visible {
+            opacity: 1;
+        }
+
+        /* Interactive Segment Styles */
+        .interactive-segment {
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border-bottom: 2px dotted #cbd5e1;
+            padding-bottom: 2px;
+        }
+
+        .interactive-segment:hover {
+            background-color: #fef08a; /* Yellow-200 */
+            color: #000;
+        }
+
+        .interactive-segment.active {
+            background-color: #fde047; /* Yellow-300 */
+            color: #000;
+        }
+
+        /* Smooth slide for translation */
+        .translation-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .translation-container.open {
+            max-height: 200px; /* Arbitrary large height */
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- Container -->
+    <div class="max-w-[95%] mx-auto bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
+        
+        <!-- Header -->
+        <div class="bg-gray-800 text-white p-6 text-center border-b-4 border-yellow-500">
+            <h1 class="text-3xl md:text-4xl font-black tracking-wide uppercase">Lesson 3: O Me! O Life!</h1>
+            <h2 class="text-xl md:text-2xl font-bold mt-2 text-yellow-400">Walt Whitman</h2>
+        </div>
+
+        <!-- Content Area -->
+        <div id="story-container" class="p-6 md:p-10 space-y-8">
+            <!-- Content will be injected here by JavaScript -->
+        </div>
+
+        <!-- Instructions Footer -->
+        <div class="bg-gray-100 p-4 text-center text-gray-600 font-bold border-t text-sm">
+            <i class="fas fa-info-circle mr-2"></i> 
+            Click text segments for meaning & pronunciation | Click <i class="fas fa-volume-up mx-1"></i> for full sentence | Click <i class="fas fa-language mx-1"></i> for translation
+        </div>
+    </div>
+
+    <!-- Tooltip Element (Single instance moved around) -->
+    <div id="global-tooltip" class="custom-tooltip"></div>
+
+    <script>
+        // Data Structure with Phrase Segmentation
+        const storyData = [
+            {
+                id: 1,
+                fullText: "Oh me! Oh life! of the questions of these recurring,",
+                fullTranslation: "হায় আমি! হায় জীবন! এই যে ফিরে ফিরে আসা প্রশ্নগুলো,",
+                segments: [
+                    { text: "Oh me! Oh life!", meaning: "হায় আমি! হায় জীবন!" },
+                    { text: "of the questions", meaning: "প্রশ্নগুলোর" },
+                    { text: "of these recurring,", meaning: "এই বারবার ফিরে আসার," }
+                ]
+            },
+            {
+                id: 2,
+                fullText: "Of the endless trains of the faithless, of cities fill’d with the foolish,",
+                fullTranslation: "বিশ্বাসহীনদের অন্তহীন মিছিলে, বোকাদের দিয়ে পূর্ণ শহরগুলোতে,",
+                segments: [
+                    { text: "Of the endless trains", meaning: "অন্তহীন মিছিলের" },
+                    { text: "of the faithless,", meaning: "বিশ্বাসহীনদের," },
+                    { text: "of cities fill’d", meaning: "শহরগুলো পূর্ণ" },
+                    { text: "with the foolish,", meaning: "বোকাদের দ্বারা," }
+                ]
+            },
+            {
+                id: 3,
+                fullText: "Of myself forever reproaching myself, (for who more foolish than I, and who more faithless?)",
+                fullTranslation: "নিজেকে চিরকাল ধিক্কার দেওয়া আমার, (কারণ আমার চেয়ে বোকা কে, আর কে বা বেশি বিশ্বাসহীন?)",
+                segments: [
+                    { text: "Of myself", meaning: "আমার নিজের" },
+                    { text: "forever reproaching myself,", meaning: "নিজেকে চিরকাল ভর্ৎসনা করা," },
+                    { text: "(for who more foolish than I,", meaning: "(কারণ আমার চেয়ে বোকা কে," },
+                    { text: "and who more faithless?)", meaning: "আর কে বেশি অবিশ্বাসী?)" }
+                ]
+            },
+            {
+                id: 4,
+                fullText: "Of eyes that vainly crave the light, of the objects mean, of the struggle ever renew’d,",
+                fullTranslation: "সেই চোখগুলোর যা বৃথাই আলো খোঁজে, তুচ্ছ সব বস্তুর, চিররিনিব করা সংগ্রামের,",
+                segments: [
+                    { text: "Of eyes that", meaning: "সেই চোখগুলোর যা" },
+                    { text: "vainly crave the light,", meaning: "বৃথাই আলো প্রত্যাশা করে," },
+                    { text: "of the objects mean,", meaning: "নীচ/তুচ্ছ বস্তুসমূহের," },
+                    { text: "of the struggle ever renew’d,", meaning: "চিরনবীন সেই সংগ্রামের," }
+                ]
+            },
+            {
+                id: 5,
+                fullText: "Of the poor results of all, of the plodding and sordid crowds I see around me,",
+                fullTranslation: "সবকিছুর তুচ্ছ ফলাফলের, আমার চারপাশে দেখা মন্থর ও নোংরা ভিড়ের,",
+                segments: [
+                    { text: "Of the poor results of all,", meaning: "সবকিছুর নগণ্য ফলাফলের," },
+                    { text: "of the plodding", meaning: "কষ্টকর হাঁটার" },
+                    { text: "and sordid crowds", meaning: "এবং নোংরা ভিড়ের" },
+                    { text: "I see around me,", meaning: "যা আমি চারপাশে দেখি," }
+                ]
+            },
+            {
+                id: 6,
+                fullText: "Of the empty and useless years of the rest, with the rest me intertwined,",
+                fullTranslation: "বাকিদের শূন্য ও নিরর্থক বছরগুলোর, সেই বাকিদের সাথে আমিও যে জড়িয়ে আছি,",
+                segments: [
+                    { text: "Of the empty", meaning: "শূন্যতার" },
+                    { text: "and useless years of the rest,", meaning: "ও বাকিদের অকেজো বছরগুলোর," },
+                    { text: "with the rest me intertwined,", meaning: "তাদের সাথে আমি জড়িয়ে আছি," }
+                ]
+            },
+            {
+                id: 7,
+                fullText: "The question, O me! so sad, recurring—What good amid these, O me, O life?",
+                fullTranslation: "প্রশ্ন জাগে, হায় আমি! এত দুঃখজনক, বারবার ফিরে আসে—এসবের মাঝে ভালো কী আছে, হায় আমি, হায় জীবন?",
+                segments: [
+                    { text: "The question, O me!", meaning: "প্রশ্নটি, হায় আমি!" },
+                    { text: "so sad, recurring—", meaning: "এত দুঃখজনক, বারবার ফিরে আসা—" },
+                    { text: "What good amid these,", meaning: "এসবের মাঝে ভালো কী," },
+                    { text: "O me, O life?", meaning: "হায় আমি, হায় জীবন?" }
+                ]
+            }
+        ];
+
+        // Speech Synthesis Setup
+        const synth = window.speechSynthesis;
+        let voices = [];
+
+        function loadVoices() {
+            voices = synth.getVoices();
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterThis = new SpeechSynthesisUtterance(text);
+            // Try to select a clear English voice
+            const englishVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB');
+            if (englishVoice) utterThis.voice = englishVoice;
+            
+            utterThis.rate = 0.9; // Slightly slower for education
+            utterThis.pitch = 1;
+            synth.speak(utterThis);
+        }
+
+        // Render Function
+        function renderContent() {
+            const container = document.getElementById('story-container');
+            const tooltip = document.getElementById('global-tooltip');
+            let activeTimeout;
+
+            storyData.forEach((sentence, index) => {
+                // 1. Create Row Wrapper
+                const row = document.createElement('div');
+                row.className = "group mb-6";
+
+                // 2. Main Flex Container (Speaker + Text + Translate)
+                const mainFlex = document.createElement('div');
+                mainFlex.className = "flex items-start gap-4";
+
+                // --- Left: Speaker Icon (Full Sentence) ---
+                const speakBtn = document.createElement('button');
+                speakBtn.className = "mt-1 text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-full hover:bg-blue-50 focus:outline-none flex-shrink-0";
+                speakBtn.innerHTML = '<i class="fas fa-volume-up text-2xl"></i>';
+                speakBtn.title = "Read Full Sentence";
+                speakBtn.onclick = () => speak(sentence.fullText);
+
+                // --- Center: Segmented Text ---
+                const textContainer = document.createElement('div');
+                textContainer.className = "flex-grow text-2xl md:text-3xl leading-relaxed text-gray-800 font-bold";
+                
+                // Process segments
+                sentence.segments.forEach(segment => {
+                    const span = document.createElement('span');
+                    span.textContent = segment.text + " "; // Add space
+                    span.className = "interactive-segment inline-block mr-1";
+                    
+                    // Click Event for Segment
+                    span.onclick = (e) => {
+                        // 1. Audio
+                        speak(segment.text);
+
+                        // 2. Visual Highlight
+                        document.querySelectorAll('.interactive-segment').forEach(el => el.classList.remove('active'));
+                        span.classList.add('active');
+
+                        // 3. Tooltip Logic
+                        tooltip.textContent = segment.meaning;
+                        
+                        // Positioning
+                        const rect = span.getBoundingClientRect();
+                        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                        tooltip.style.left = (rect.left + scrollLeft + (rect.width / 2)) + 'px';
+                        tooltip.style.top = (rect.top + scrollTop - 10) + 'px';
+                        
+                        tooltip.classList.add('tooltip-visible');
+
+                        // Hide tooltip after delay or click elsewhere logic could go here
+                        if (activeTimeout) clearTimeout(activeTimeout);
+                        activeTimeout = setTimeout(() => {
+                            tooltip.classList.remove('tooltip-visible');
+                            span.classList.remove('active');
+                        }, 3500);
+                    };
+
+                    textContainer.appendChild(span);
+                });
+
+                // --- Right: Language Icon (Show Translation) ---
+                const transBtn = document.createElement('button');
+                transBtn.className = "mt-1 text-emerald-600 hover:text-emerald-800 transition-colors p-2 rounded-full hover:bg-emerald-50 focus:outline-none flex-shrink-0";
+                transBtn.innerHTML = '<i class="fas fa-language text-3xl"></i>';
+                transBtn.title = "Show Translation";
+                transBtn.onclick = () => {
+                    const transDiv = document.getElementById(`trans-${index}`);
+                    if (transDiv.classList.contains('open')) {
+                        transDiv.classList.remove('open');
+                    } else {
+                        transDiv.classList.add('open');
+                    }
+                };
+
+                // Append Left, Center, Right to Flex
+                mainFlex.appendChild(speakBtn);
+                mainFlex.appendChild(textContainer);
+                mainFlex.appendChild(transBtn);
+
+                // 3. Translation Container (Hidden by default)
+                const translationDiv = document.createElement('div');
+                translationDiv.id = `trans-${index}`;
+                translationDiv.className = "translation-container ml-14 mr-14 border-l-4 border-emerald-500 pl-4 mt-2";
+                
+                const translationText = document.createElement('p');
+                translationText.className = "bengali-font text-2xl md:text-3xl text-gray-700 font-bold py-2";
+                translationText.textContent = sentence.fullTranslation;
+                
+                translationDiv.appendChild(translationText);
+
+                // Add to Row
+                row.appendChild(mainFlex);
+                row.appendChild(translationDiv);
+
+                // Add Row to Main Container
+                container.appendChild(row);
+            });
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadVoices(); // Try loading voices immediately
+            renderContent();
+            
+            // Global click to hide tooltip if clicking whitespace
+            document.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('interactive-segment')) {
+                     document.getElementById('global-tooltip').classList.remove('tooltip-visible');
+                     document.querySelectorAll('.interactive-segment').forEach(el => el.classList.remove('active'));
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
