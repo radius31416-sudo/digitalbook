@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental Pollution - Interactive Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@600;700;800&family=Noto+Serif+Bengali:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fdfbf7;
+            color: #1a202c;
+        }
+        .font-en {
+            font-family: 'Lato', sans-serif;
+        }
+        .font-bn {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+        /* Highlight on hover */
+        .phrase {
+            transition: background-color 0.2s, color 0.2s;
+            cursor: pointer;
+            border-radius: 4px;
+            padding: 0 4px;
+        }
+        .phrase:hover {
+            background-color: #fef08a; /* Tailwind yellow-200 */
+            color: #854d0e; /* Tailwind yellow-800 */
+        }
+        /* Smooth translation slide down */
+        .translation-box {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.4s ease-in-out;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .translation-box.active {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        /* Tooltip styles */
+        #tooltip {
+            transition: opacity 0.2s ease-in-out;
+            z-index: 50;
+        }
+        /* Adjust sentence spacing for readability */
+        .sentence-wrapper {
+            line-height: 2.2;
+            margin-bottom: 0.5rem;
+            display: inline;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-20 relative">
+
+    <!-- Tooltip Element -->
+    <div id="tooltip" class="absolute hidden opacity-0 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-2xl font-bn font-bold pointer-events-none transform -translate-x-1/2">
+        Translation
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-[95%] mx-auto pt-10 px-4 md:px-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-12 border-b-4 border-gray-300 pb-6">
+            <h1 class="text-5xl md:text-6xl font-bold font-en text-gray-800 mb-4">Environmental Pollution</h1>
+            <h2 class="text-3xl md:text-4xl font-bold font-bn text-gray-600">পরিবেশ দূষণ</h2>
+            <p class="text-xl font-semibold text-gray-500 mt-4">Click phrases for meaning. Use icons for full sentence audio and translation.</p>
+        </header>
+
+        <!-- Content Area -->
+        <main id="content-container" class="space-y-8 text-2xl md:text-3xl font-bold font-en leading-relaxed">
+            <!-- JavaScript will inject content here -->
+        </main>
+
+    </div>
+
+    <script>
+        // Structured Data Object
+        const storyData = [
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "Bangladesh is now in the grip of all sorts of pollution like air pollution, soil pollution and water pollution.",
+                        bn: "বাংলাদেশ এখন বায়ু দূষণ, মাটি দূষণ এবং পানি দূষণের মতো সব ধরনের দূষণের কবলে পড়েছে।",
+                        phrases: [
+                            { en: "Bangladesh is now", bn: "বাংলাদেশ এখন" },
+                            { en: "in the grip of", bn: "কবলে পড়েছে" },
+                            { en: "all sorts of pollution", bn: "সব ধরনের দূষণের" },
+                            { en: "like air pollution,", bn: "যেমন বায়ু দূষণ," },
+                            { en: "soil pollution", bn: "মাটি দূষণ" },
+                            { en: "and water pollution.", bn: "এবং পানি দূষণ।" }
+                        ]
+                    },
+                    {
+                        en: "The dwellers of the urban areas are the worst sufferers of such pollution.",
+                        bn: "শহরাঞ্চলের বাসিন্দারা এ ধরনের দূষণের সবচেয়ে বেশি ভুক্তভোগী।",
+                        phrases: [
+                            { en: "The dwellers", bn: "বাসিন্দারা" },
+                            { en: "of the urban areas", bn: "শহরাঞ্চলের" },
+                            { en: "are the worst sufferers", bn: "সবচেয়ে বেশি ভুক্তভোগী" },
+                            { en: "of such pollution.", bn: "এ ধরনের দূষণের।" }
+                        ]
+                    },
+                    {
+                        en: "The indiscriminate industrialisation process in Bangladesh over the past decades has created significant environmental problems.",
+                        bn: "বিগত দশকগুলোতে বাংলাদেশে অবাধে শিল্পায়ন প্রক্রিয়া মারাত্মক পরিবেশগত সমস্যা সৃষ্টি করেছে।",
+                        phrases: [
+                            { en: "The indiscriminate", bn: "অবাধে" },
+                            { en: "industrialisation process", bn: "শিল্পায়ন প্রক্রিয়া" },
+                            { en: "in Bangladesh", bn: "বাংলাদেশে" },
+                            { en: "over the past decades", bn: "বিগত দশকগুলোতে" },
+                            { en: "has created", bn: "সৃষ্টি করেছে" },
+                            { en: "significant environmental problems.", bn: "মারাত্মক পরিবেশগত সমস্যা।" }
+                        ]
+                    },
+                    {
+                        en: "We will now read about some of the most common types of environmental pollutions and ways of coping with them.",
+                        bn: "আমরা এখন পরিবেশ দূষণের সবচেয়ে সাধারণ কিছু ধরন এবং সেগুলো মোকাবেলার উপায় সম্পর্কে পড়ব।",
+                        phrases: [
+                            { en: "We will now read", bn: "আমরা এখন পড়ব" },
+                            { en: "about some of the most common types", bn: "সবচেয়ে সাধারণ কিছু ধরন সম্পর্কে" },
+                            { en: "of environmental pollutions", bn: "পরিবেশ দূষণের" },
+                            { en: "and ways of coping", bn: "এবং সেগুলো মোকাবেলার উপায়" },
+                            { en: "with them.", bn: "সম্পর্কে।" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "subtitle",
+                en: "Air Pollution",
+                bn: "বায়ু দূষণ"
+            },
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "Air pollution comes from a wide variety of sources.",
+                        bn: "বায়ু দূষণ বিভিন্ন ধরণের উৎস থেকে আসে।",
+                        phrases: [
+                            { en: "Air pollution comes from", bn: "বায়ু দূষণ আসে" },
+                            { en: "a wide variety of sources.", bn: "বিভিন্ন ধরণের উৎস থেকে।" }
+                        ]
+                    },
+                    {
+                        en: "In Bangladesh poisonous exhausts from industrial plants, brick kilns, old or poorly-serviced vehicles and dust from roads and construction sites are some of the major sources of air pollution.",
+                        bn: "বাংলাদেশে শিল্প কারখানা, ইটের ভাটা, পুরানো বা ত্রুটিপূর্ণ যানবাহন থেকে বিষাক্ত ধোঁয়া এবং রাস্তার ধুলাবালি ও নির্মাণ সাইট হলো বায়ু দূষণের অন্যতম প্রধান উৎস।",
+                        phrases: [
+                            { en: "In Bangladesh", bn: "বাংলাদেশে" },
+                            { en: "poisonous exhausts", bn: "বিষাক্ত ধোঁয়া" },
+                            { en: "from industrial plants,", bn: "শিল্প কারখানা," },
+                            { en: "brick kilns,", bn: "ইটের ভাটা," },
+                            { en: "old or poorly-serviced vehicles", bn: "পুরানো বা ত্রুটিপূর্ণ যানবাহন" },
+                            { en: "and dust from roads", bn: "এবং রাস্তার ধুলাবালি" },
+                            { en: "and construction sites", bn: "ও নির্মাণ সাইট থেকে" },
+                            { en: "are some of the major sources", bn: "হলো অন্যতম প্রধান উৎস" },
+                            { en: "of air pollution.", bn: "বায়ু দূষণের।" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "We can minimise this type of pollution by making less use of motor vehicles and avoiding the use of vehicles older than 20 years.",
+                        bn: "মোটরযানের কম ব্যবহার করে এবং ২০ বছরের পুরনো যানবাহনের ব্যবহার এড়িয়ে আমরা এ ধরনের দূষণ কমাতে পারি।",
+                        phrases: [
+                            { en: "We can minimise", bn: "আমরা কমাতে পারি" },
+                            { en: "this type of pollution", bn: "এ ধরনের দূষণ" },
+                            { en: "by making less use of", bn: "কম ব্যবহার করে" },
+                            { en: "motor vehicles", bn: "মোটরযান" },
+                            { en: "and avoiding the use of", bn: "এবং ব্যবহার এড়িয়ে" },
+                            { en: "vehicles older than 20 years.", bn: "২০ বছরের পুরনো যানবাহনের।" }
+                        ]
+                    },
+                    {
+                        en: "We may also use proper lubricants to lessen the level of emission and pollutants.",
+                        bn: "নির্গমন এবং দূষকসমূহের মাত্রা কমাতে আমরা সঠিক লুব্রিকেন্ট বা পিচ্ছিলকারক পদার্থও ব্যবহার করতে পারি।",
+                        phrases: [
+                            { en: "We may also use", bn: "আমরা আরও ব্যবহার করতে পারি" },
+                            { en: "proper lubricants", bn: "সঠিক লুব্রিকেন্ট বা পিচ্ছিলকারক পদার্থ" },
+                            { en: "to lessen the level", bn: "মাত্রা কমাতে" },
+                            { en: "of emission and pollutants.", bn: "নির্গমন এবং দূষকসমূহের।" }
+                        ]
+                    },
+                    {
+                        en: "We can encourage people to use Compressed Natural Gas (CNG) or Liquid Petroleum Gas (LPG) for fuelling their cars.",
+                        bn: "আমরা মানুষকে তাদের গাড়ির জ্বালানি হিসেবে সংকুচিত প্রাকৃতিক গ্যাস (সিএনজি) বা তরলীকৃত পেট্রোলিয়াম গ্যাস (এলপিজি) ব্যবহারে উৎসাহিত করতে পারি।",
+                        phrases: [
+                            { en: "We can encourage people", bn: "আমরা মানুষকে উৎসাহিত করতে পারি" },
+                            { en: "to use Compressed Natural Gas (CNG)", bn: "সংকুচিত প্রাকৃতিক গ্যাস (সিএনজি) ব্যবহারে" },
+                            { en: "or Liquid Petroleum Gas (LPG)", bn: "বা তরলীকৃত পেট্রোলিয়াম গ্যাস (এলপিজি) ব্যবহারে" },
+                            { en: "for fuelling their cars.", bn: "তাদের গাড়ির জ্বালানি হিসেবে।" }
+                        ]
+                    },
+                    {
+                        en: "The government may relocate hazardous industries like brick kilns to areas away from human habitations.",
+                        bn: "সরকার বিপজ্জনক শিল্পকারখানাগুলোকে যেমন ইটের ভাটা জনবসতি থেকে দূরের এলাকায় স্থানান্তর করতে পারে।",
+                        phrases: [
+                            { en: "The government may relocate", bn: "সরকার স্থানান্তর করতে পারে" },
+                            { en: "hazardous industries", bn: "বিপজ্জনক শিল্পকারখানাগুলোকে" },
+                            { en: "like brick kilns", bn: "যেমন ইটের ভাটা" },
+                            { en: "to areas away", bn: "দূরের এলাকায়" },
+                            { en: "from human habitations.", bn: "জনবসতি থেকে।" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "subtitle",
+                en: "Water Pollution",
+                bn: "পানি দূষণ"
+            },
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "Water pollution can occur in oceans, rivers, lakes, ponds and underground reservoirs.",
+                        bn: "পানি দূষণ মহাসাগর, নদী, হ্রদ, পুকুর এবং ভূগর্ভস্থ জলাধারে ঘটতে পারে।",
+                        phrases: [
+                            { en: "Water pollution can occur", bn: "পানি দূষণ ঘটতে পারে" },
+                            { en: "in oceans,", bn: "মহাসাগরে," },
+                            { en: "rivers, lakes,", bn: "নদী, হ্রদ," },
+                            { en: "ponds and underground reservoirs.", bn: "পুকুর এবং ভূগর্ভস্থ জলাধারে।" }
+                        ]
+                    },
+                    {
+                        en: "As different water sources flow together, the pollution can spread easily and quickly.",
+                        bn: "যেহেতু বিভিন্ন পানির উৎস একসাথে প্রবাহিত হয়, তাই দূষণ সহজে এবং দ্রুত ছড়িয়ে পড়তে পারে।",
+                        phrases: [
+                            { en: "As different water sources", bn: "যেহেতু বিভিন্ন পানির উৎস" },
+                            { en: "flow together,", bn: "একসাথে প্রবাহিত হয়," },
+                            { en: "the pollution can spread", bn: "দূষণ ছড়িয়ে পড়তে পারে" },
+                            { en: "easily and quickly.", bn: "সহজে এবং দ্রুত।" }
+                        ]
+                    },
+                    {
+                        en: "Causes of water pollution include:",
+                        bn: "পানি দূষণের কারণগুলোর মধ্যে রয়েছে:",
+                        phrases: [
+                            { en: "Causes of water pollution include:", bn: "পানি দূষণের কারণগুলোর মধ্যে রয়েছে:" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "list",
+                items: [
+                    {
+                        en: "increased sediment from soil erosion",
+                        bn: "মাটি ক্ষয় থেকে পলির বৃদ্ধি",
+                        phrases: [
+                            { en: "increased sediment", bn: "পলির বৃদ্ধি" },
+                            { en: "from soil erosion", bn: "মাটি ক্ষয় থেকে" }
+                        ]
+                    },
+                    {
+                        en: "improper waste disposal and littering",
+                        bn: "অনুপযুক্ত বর্জ্য নিষ্কাশন এবং যত্রতত্র আবর্জনা ফেলা",
+                        phrases: [
+                            { en: "improper waste disposal", bn: "অনুপযুক্ত বর্জ্য নিষ্কাশন" },
+                            { en: "and littering", bn: "এবং যত্রতত্র আবর্জনা ফেলা" }
+                        ]
+                    },
+                    {
+                        en: "leakage of soil pollution into water supplies",
+                        bn: "পানি সরবরাহে মাটি দূষণের চুইয়ে পড়া",
+                        phrases: [
+                            { en: "leakage of soil pollution", bn: "মাটি দূষণের চুইয়ে পড়া" },
+                            { en: "into water supplies", bn: "পানি সরবরাহে" }
+                        ]
+                    },
+                    {
+                        en: "organic materials that decay in water supplies",
+                        bn: "পানি সরবরাহে পচে যাওয়া জৈব পদার্থ",
+                        phrases: [
+                            { en: "organic materials", bn: "জৈব পদার্থ" },
+                            { en: "that decay in water supplies", bn: "যা পানি সরবরাহে পচে যায়" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "In fact, polluting the land means polluting the water.",
+                        bn: "প্রকৃতপক্ষে, ভূমি দূষণ করার অর্থ হলো পানি দূষণ করা।",
+                        phrases: [
+                            { en: "In fact,", bn: "প্রকৃতপক্ষে," },
+                            { en: "polluting the land means", bn: "ভূমি দূষণ করার অর্থ হলো" },
+                            { en: "polluting the water.", bn: "পানি দূষণ করা।" }
+                        ]
+                    },
+                    {
+                        en: "Throwing away a toxic substance on the ground near a water source means it eventually reaches the body of water.",
+                        bn: "পানির উৎসের কাছে মাটিতে কোন বিষাক্ত পদার্থ ফেলে দেওয়ার মানে হলো এটি শেষ পর্যন্ত জলাশয়ে পৌঁছায়।",
+                        phrases: [
+                            { en: "Throwing away", bn: "ফেলে দেওয়া" },
+                            { en: "a toxic substance", bn: "কোন বিষাক্ত পদার্থ" },
+                            { en: "on the ground", bn: "মাটিতে" },
+                            { en: "near a water source", bn: "পানির উৎসের কাছে" },
+                            { en: "means it eventually reaches", bn: "এর মানে হলো এটি শেষ পর্যন্ত পৌঁছায়" },
+                            { en: "the body of water.", bn: "জলাশয়ে।" }
+                        ]
+                    },
+                    {
+                        en: "As a result, the water is polluted.",
+                        bn: "ফলস্বরূপ, পানি দূষিত হয়।",
+                        phrases: [
+                            { en: "As a result,", bn: "ফলস্বরূপ," },
+                            { en: "the water is polluted.", bn: "পানি দূষিত হয়।" }
+                        ]
+                    },
+                    {
+                        en: "Industrial wastes must not be disposed in rivers or lakes.",
+                        bn: "শিল্প বর্জ্য নদী বা হ্রদে ফেলা উচিত নয়।",
+                        phrases: [
+                            { en: "Industrial wastes", bn: "শিল্প বর্জ্য" },
+                            { en: "must not be disposed", bn: "ফেলা উচিত নয়" },
+                            { en: "in rivers or lakes.", bn: "নদী বা হ্রদে।" }
+                        ]
+                    },
+                    {
+                        en: "We need to be more careful about disposing household wastes too.",
+                        bn: "গৃহস্থালির বর্জ্য ফেলার বিষয়েও আমাদের আরও সতর্ক হতে হবে।",
+                        phrases: [
+                            { en: "We need to be more careful", bn: "আমাদের আরও সতর্ক হতে হবে" },
+                            { en: "about disposing household wastes too.", bn: "গৃহস্থালির বর্জ্য ফেলার বিষয়েও।" }
+                        ]
+                    },
+                    {
+                        en: "Use of pesticides means that when it rains, chemicals used in the lawn or garden wash into the water bodies.",
+                        bn: "কীটনাশক ব্যবহারের অর্থ হলো যখন বৃষ্টি হয়, তখন লন বা বাগানে ব্যবহৃত রাসায়নিকগুলো জলাশয়ে ধুয়ে যায়।",
+                        phrases: [
+                            { en: "Use of pesticides means that", bn: "কীটনাশক ব্যবহারের অর্থ হলো" },
+                            { en: "when it rains,", bn: "যখন বৃষ্টি হয়," },
+                            { en: "chemicals used", bn: "ব্যবহৃত রাসায়নিকগুলো" },
+                            { en: "in the lawn or garden", bn: "লন বা বাগানে" },
+                            { en: "wash into the water bodies.", bn: "জলাশয়ে ধুয়ে যায়।" }
+                        ]
+                    },
+                    {
+                        en: "Therefore, we must be aware of the dangers of using pesticides as they may pollute our rivers, canals and lakes.",
+                        bn: "তাই, কীটনাশক ব্যবহারের বিপদ সম্পর্কে আমাদের সচেতন হতে হবে, কারণ সেগুলো আমাদের নদী, খাল এবং হ্রদ দূষিত করতে পারে।",
+                        phrases: [
+                            { en: "Therefore,", bn: "তাই," },
+                            { en: "we must be aware", bn: "আমাদের সচেতন হতে হবে" },
+                            { en: "of the dangers", bn: "বিপদ সম্পর্কে" },
+                            { en: "of using pesticides", bn: "কীটনাশক ব্যবহারের" },
+                            { en: "as they may pollute", bn: "যেহেতু সেগুলো দূষিত করতে পারে" },
+                            { en: "our rivers, canals and lakes.", bn: "আমাদের নদী, খাল এবং হ্রদ।" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "subtitle",
+                en: "Soil Pollution",
+                bn: "মাটি দূষণ"
+            },
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "Among the most significant causes of soil pollution is the enormous volume of industrial waste which is being produced every day but not disposed properly.",
+                        bn: "মাটি দূষণের সবচেয়ে উল্লেখযোগ্য কারণগুলোর মধ্যে একটি হলো বিপুল পরিমাণ শিল্প বর্জ্য, যা প্রতিদিন উৎপন্ন হচ্ছে কিন্তু সঠিকভাবে নিষ্কাশন করা হচ্ছে না।",
+                        phrases: [
+                            { en: "Among the most significant causes", bn: "সবচেয়ে উল্লেখযোগ্য কারণগুলোর মধ্যে" },
+                            { en: "of soil pollution", bn: "মাটি দূষণের" },
+                            { en: "is the enormous volume", bn: "হলো বিপুল পরিমাণ" },
+                            { en: "of industrial waste", bn: "শিল্প বর্জ্য" },
+                            { en: "which is being produced every day", bn: "যা প্রতিদিন উৎপন্ন হচ্ছে" },
+                            { en: "but not disposed properly.", bn: "কিন্তু সঠিকভাবে নিষ্কাশন করা হচ্ছে না।" }
+                        ]
+                    },
+                    {
+                        en: "The mismanagement of household wastes, particularly the polythene shopping bags, has caused serious threat to the soil and the drainage system.",
+                        bn: "গৃহস্থালি বর্জ্যের অব্যবস্থাপনা, বিশেষ করে পলিথিন শপিং ব্যাগ, মাটি এবং ড্রেনেজ ব্যবস্থার জন্য মারাত্মক হুমকির সৃষ্টি করেছে।",
+                        phrases: [
+                            { en: "The mismanagement", bn: "অব্যবস্থাপনা" },
+                            { en: "of household wastes,", bn: "গৃহস্থালি বর্জ্যের," },
+                            { en: "particularly the polythene shopping bags,", bn: "বিশেষ করে পলিথিন শপিং ব্যাগ," },
+                            { en: "has caused serious threat", bn: "মারাত্মক হুমকির সৃষ্টি করেছে" },
+                            { en: "to the soil and the drainage system.", bn: "মাটি এবং ড্রেনেজ ব্যবস্থার জন্য।" }
+                        ]
+                    },
+                    {
+                        en: "Another cause for soil pollution is the use of agricultural pesticides, fertilizers, etc.",
+                        bn: "মাটি দূষণের আরেকটি কারণ হলো কৃষিতে কীটনাশক, সার ইত্যাদির ব্যবহার।",
+                        phrases: [
+                            { en: "Another cause", bn: "আরেকটি কারণ" },
+                            { en: "for soil pollution", bn: "মাটি দূষণের" },
+                            { en: "is the use of", bn: "হলো ব্যবহার" },
+                            { en: "agricultural pesticides,", bn: "কৃষিতে কীটনাশকের," },
+                            { en: "fertilizers, etc.", bn: "সার, ইত্যাদির।" }
+                        ]
+                    },
+                    {
+                        en: "Sometimes fuel leakages from automobiles may get washed away by rain and seep into the nearby soil.",
+                        bn: "কখনো কখনো গাড়ি থেকে জ্বালানি লিক হওয়া বৃষ্টিতে ধুয়ে যেতে পারে এবং কাছের মাটিতে চুইয়ে পড়তে পারে।",
+                        phrases: [
+                            { en: "Sometimes fuel leakages", bn: "কখনো কখনো জ্বালানি লিক হওয়া" },
+                            { en: "from automobiles", bn: "গাড়ি থেকে" },
+                            { en: "may get washed away by rain", bn: "বৃষ্টিতে ধুয়ে যেতে পারে" },
+                            { en: "and seep into the nearby soil.", bn: "এবং কাছের মাটিতে চুইয়ে পড়তে পারে।" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "paragraph",
+                sentences: [
+                    {
+                        en: "Pesticides and fertilizers are useful for plant growth but their overuse has led to soil pollution.",
+                        bn: "কীটনাশক এবং সার উদ্ভিদের বৃদ্ধির জন্য দরকারী, কিন্তু এগুলোর অতিরিক্ত ব্যবহার মাটি দূষণের দিকে পরিচালিত করেছে।",
+                        phrases: [
+                            { en: "Pesticides and fertilizers", bn: "কীটনাশক এবং সার" },
+                            { en: "are useful for plant growth", bn: "উদ্ভিদের বৃদ্ধির জন্য দরকারী" },
+                            { en: "but their overuse", bn: "কিন্তু এগুলোর অতিরিক্ত ব্যবহার" },
+                            { en: "has led to soil pollution.", bn: "মাটি দূষণের দিকে পরিচালিত করেছে।" }
+                        ]
+                    },
+                    {
+                        en: "Natural fertilizers and compost can be used instead of their chemical alternatives.",
+                        bn: "এগুলোর রাসায়নিক বিকল্পের পরিবর্তে প্রাকৃতিক সার এবং কম্পোস্ট ব্যবহার করা যেতে পারে।",
+                        phrases: [
+                            { en: "Natural fertilizers and compost", bn: "প্রাকৃতিক সার এবং কম্পোস্ট" },
+                            { en: "can be used instead of", bn: "পরিবর্তে ব্যবহার করা যেতে পারে" },
+                            { en: "their chemical alternatives.", bn: "এগুলোর রাসায়নিক বিকল্পের।" }
+                        ]
+                    },
+                    {
+                        en: "Recycling is another way to reduce and control soil pollution.",
+                        bn: "রিসাইক্লিং বা পুনর্ব্যবহার হলো মাটি দূষণ কমানো এবং নিয়ন্ত্রণ করার আরেকটি উপায়।",
+                        phrases: [
+                            { en: "Recycling is another way", bn: "রিসাইক্লিং বা পুনর্ব্যবহার হলো আরেকটি উপায়" },
+                            { en: "to reduce and control", bn: "কমানো এবং নিয়ন্ত্রণ করার" },
+                            { en: "soil pollution.", bn: "মাটি দূষণ।" }
+                        ]
+                    },
+                    {
+                        en: "Recycling papers, plastics and other materials reduces the volume of refuse in landfills.",
+                        bn: "কাগজ, প্লাস্টিক এবং অন্যান্য উপকরণের পুনর্ব্যবহার ল্যান্ডফিলে বা ময়লা ফেলার জায়গায় বর্জ্যের পরিমাণ কমায়।",
+                        phrases: [
+                            { en: "Recycling papers, plastics", bn: "কাগজ, প্লাস্টিক পুনর্ব্যবহার" },
+                            { en: "and other materials", bn: "এবং অন্যান্য উপকরণ" },
+                            { en: "reduces the volume of refuse", bn: "বর্জ্যের পরিমাণ কমায়" },
+                            { en: "in landfills.", bn: "ল্যান্ডফিলে বা ময়লা ফেলার জায়গায়।" }
+                        ]
+                    },
+                    {
+                        en: "Deforestation also causes erosion, pollution and the loss of fertility in the topsoil.",
+                        bn: "বন উজাড় উপরের স্তরের মাটির ক্ষয়, দূষণ এবং উর্বরতা হ্রাস ঘটায়।",
+                        phrases: [
+                            { en: "Deforestation also causes", bn: "বন উজাড়ও ঘটায়" },
+                            { en: "erosion, pollution", bn: "ক্ষয়, দূষণ" },
+                            { en: "and the loss of fertility", bn: "এবং উর্বরতা হ্রাস" },
+                            { en: "in the topsoil.", bn: "উপরের স্তরের মাটির।" }
+                        ]
+                    },
+                    {
+                        en: "Planting trees and re-forestation help prevent soil erosion and pollution.",
+                        bn: "গাছ লাগানো এবং পুনরায় বনায়ন মাটি ক্ষয় এবং দূষণ প্রতিরোধ করতে সাহায্য করে।",
+                        phrases: [
+                            { en: "Planting trees", bn: "গাছ লাগানো" },
+                            { en: "and re-forestation", bn: "এবং পুনরায় বনায়ন" },
+                            { en: "help prevent", bn: "প্রতিরোধ করতে সাহায্য করে" },
+                            { en: "soil erosion and pollution.", bn: "মাটি ক্ষয় এবং দূষণ।" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Core Functions
+        const synth = window.speechSynthesis;
+
+        function playAudio(text, rate = 0.75) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = rate; // Slow reading pace
+            synth.speak(utterance);
+        }
+
+        function showTooltip(element, text) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerText = text;
+            
+            // ব্রাউজার যেন সঠিক উচ্চতা পরিমাপ করতে পারে সেজন্য আগে hidden সরাতে হবে
+            tooltip.classList.remove('hidden');
+            
+            // Positioning above the element
+            const rect = element.getBoundingClientRect();
+            
+            // Calculate absolute top, subtracting tooltip height and spacing
+            tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 12}px`;
+            
+            // Center Horizontally
+            let leftPos = rect.left + window.scrollX + (rect.width / 2);
+            tooltip.style.left = `${leftPos}px`;
+
+            // ট্রানজিশন ইফেক্টের জন্য একটু সময় দেওয়া
+            requestAnimationFrame(() => {
+                tooltip.classList.remove('opacity-0');
+            });
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.classList.add('opacity-0');
+            
+            // আগের কোন টাইমআউট থাকলে মুছে দেওয়া
+            if(tooltip.hideTimeout) clearTimeout(tooltip.hideTimeout);
+
+            tooltip.hideTimeout = setTimeout(() => {
+                if(tooltip.classList.contains('opacity-0')){
+                    tooltip.classList.add('hidden');
+                }
+            }, 200); // Wait for transition
+        }
+
+        // Hide tooltip on outside click or scroll
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.phrase')) {
+                hideTooltip();
+            }
+        });
+        window.addEventListener('scroll', hideTooltip);
+
+        // Rendering Logic
+        const container = document.getElementById('content-container');
+
+        function renderSentence(sentenceObj) {
+            const sentenceDiv = document.createElement('div');
+            sentenceDiv.className = "sentence-wrapper inline-block w-full mb-3";
+
+            // Speaker Icon (Start)
+            const speakerBtn = document.createElement('button');
+            speakerBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+            speakerBtn.className = "mr-3 hover:scale-110 transition-transform cursor-pointer align-middle text-blue-600 inline-flex items-center justify-center -mt-2";
+            speakerBtn.title = "Listen to Full Sentence";
+            speakerBtn.onclick = () => playAudio(sentenceObj.en, 0.7);
+            sentenceDiv.appendChild(speakerBtn);
+
+            // Phrases
+            sentenceObj.phrases.forEach((phrase, idx) => {
+                const phraseSpan = document.createElement('span');
+                phraseSpan.className = "phrase inline-block";
+                phraseSpan.innerText = phrase.en + (idx < sentenceObj.phrases.length - 1 ? ' ' : '');
+                
+                phraseSpan.onclick = (e) => {
+                    e.stopPropagation();
+                    playAudio(phrase.en, 0.75);
+                    showTooltip(phraseSpan, phrase.bn);
+                };
+                
+                sentenceDiv.appendChild(phraseSpan);
+            });
+
+            // Translate Icon (End)
+            const translateBtn = document.createElement('button');
+            translateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>`;
+            translateBtn.className = "ml-3 hover:scale-110 transition-transform cursor-pointer align-middle text-green-600 inline-flex items-center justify-center -mt-2";
+            translateBtn.title = "Show Bengali Meaning";
+            sentenceDiv.appendChild(translateBtn);
+
+            // Hidden Translation Box
+            const translationBox = document.createElement('div');
+            translationBox.className = "translation-box bg-indigo-50 border-l-8 border-indigo-500 rounded-r-xl px-6 py-4 shadow-md font-bn font-bold text-3xl text-indigo-900";
+            translationBox.innerText = sentenceObj.bn;
+            
+            // Toggle logic
+            translateBtn.onclick = () => {
+                translationBox.classList.toggle('active');
+            };
+
+            // Wrap everything to ensure layout flow
+            const wrapper = document.createElement('div');
+            wrapper.className = "mb-2";
+            wrapper.appendChild(sentenceDiv);
+            wrapper.appendChild(translationBox);
+
+            return wrapper;
+        }
+
+        function renderContent() {
+            storyData.forEach(block => {
+                if (block.type === 'subtitle') {
+                    const h3 = document.createElement('h3');
+                    h3.className = "text-4xl md:text-5xl font-en font-bold text-teal-800 mt-12 mb-6 border-b-2 border-teal-200 inline-block";
+                    h3.innerText = block.en;
+                    
+                    const subBn = document.createElement('div');
+                    subBn.className = "text-3xl font-bn font-bold text-teal-600 mb-6";
+                    subBn.innerText = block.bn;
+
+                    container.appendChild(h3);
+                    container.appendChild(subBn);
+                } 
+                else if (block.type === 'paragraph') {
+                    const p = document.createElement('p');
+                    p.className = "mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100";
+                    
+                    block.sentences.forEach(sentence => {
+                        p.appendChild(renderSentence(sentence));
+                    });
+                    
+                    container.appendChild(p);
+                }
+                else if (block.type === 'list') {
+                    const ul = document.createElement('ul');
+                    ul.className = "list-none mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 pl-8 space-y-4";
+                    
+                    block.items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = "flex items-start";
+                        
+                        const bullet = document.createElement('span');
+                        bullet.className = "text-teal-500 mr-4 font-bold text-4xl leading-none";
+                        bullet.innerHTML = "&bull;";
+                        li.appendChild(bullet);
+
+                        const contentWrap = document.createElement('div');
+                        contentWrap.className = "flex-1";
+                        contentWrap.appendChild(renderSentence(item));
+
+                        li.appendChild(contentWrap);
+                        ul.appendChild(li);
+                    });
+                    
+                    container.appendChild(ul);
+                }
+            });
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', renderContent);
+
+    </script>
+</body>
+</html>
